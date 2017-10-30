@@ -4,7 +4,11 @@ import java.util.Random;
  * Created by ryoto on 2017/10/30.
  */
 public class AgentRandom extends SevensAgent {
-	final String name="random";
+	String name="random";
+	AgentRandom(){
+		name="random";
+	}
+	
 	Card strategy(Sevens sevens,int printDepth) {
 		return randomStrategy(sevens);
 	}
@@ -15,5 +19,8 @@ public class AgentRandom extends SevensAgent {
 		int index = rnd.nextInt(cards.size());
 		card=cards.get(index);
 		return card;
+	}
+	String getName(){
+		return name;
 	}
 }

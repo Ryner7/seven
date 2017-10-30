@@ -4,7 +4,10 @@ import java.util.Scanner;
  * Created by ryoto on 2017/10/30.
  */
 public class AgentManual extends SevensAgent {
-	final String name = "manual";
+	String name = "manual";
+	AgentManual(){
+		name="manual";
+	}
 	
 	Card strategy(Sevens sevens, int printDepth) {
 		Scanner scanner = new Scanner(System.in);
@@ -28,5 +31,8 @@ public class AgentManual extends SevensAgent {
 				return sevens.turnPlayer.hand.get(count);
 			}
 		}
+	}
+	String getName(){
+		return name;
 	}
 }

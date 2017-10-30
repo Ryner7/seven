@@ -2,9 +2,10 @@
  * Created by ryoto on 2017/10/17.
  */
 public class SevensAgent {
-	final  String name = "default";
+	String name = "default";
 	
 	SevensAgent() {
+		name="default";
 	}
 	
 	Card strategy(Sevens sevens,int printDepth) {
@@ -42,5 +43,8 @@ public class SevensAgent {
 	SevensAgent deepCopy() {
 		SevensAgent agent = new SevensAgent();
 		return agent;
+	}
+	String getName(){
+		return this.name;
 	}
 }

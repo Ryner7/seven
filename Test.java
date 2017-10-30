@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Test {
 	public static void main(String args[]) {
 		MyUtil.always.pln("\n---Sevens---");
-		final int N = 1000;
+		final int N = 10;
 		ArrayList<Player> players = new ArrayList<Player>();
 		int count;
 		int P = 4;
@@ -14,7 +14,7 @@ public class Test {
 		for (count = 0; count < P ; count++) {
 			players.add(new Player(count));
 		}
-		int[] agentList = {0, 0, 1, 1};
+		int[] agentList = {0, 0, 0, 2};
 		for (count = 0; count < P ; count++) {
 			player = players.get(count);
 			
@@ -29,7 +29,7 @@ public class Test {
 					player.agent=new AgentRandom();
 					break;
 				case 2:
-					//player.agent=new AgentRandom();
+					player.agent=new AgentMontecarlo();
 					break;
 				case 3:
 //					//player.agent=new AgentGamma();
@@ -38,7 +38,7 @@ public class Test {
 					player.agent = new SevensAgent();
 					break;
 			}
-			player.name = new String(player.agent.name + " " + count);
+			player.name = new String(player.agent.getName() + " " + count);
 			player.key=count;
 		}
 		Sevens sevens = new Sevens();

@@ -103,7 +103,7 @@ public class Sevens {
 	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout, int argTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory ,ArrayList<SevensAgent> agents) {
 		players = new ArrayList<Player>();
 		retireNum = 0;
-		remainingNum = argPlayers.size();
+		remainingNum = argPlayers.size()-1;
 		for (Player player : argPlayers) {
 			players.add(player.deepCopy());
 			switch (player.nums.get(END_INDEX)) {
@@ -129,6 +129,7 @@ public class Sevens {
 			playersOrder.add(order);
 		}
 		history = argHistory.deepCopy();
+		turnPlayer=players.get(playersOrder.get((turn+players.size()-1)%players.size()));
 	}
 	
 	
