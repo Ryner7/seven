@@ -24,6 +24,10 @@ public class Player {
 		Player clone=new Player(this.name,0,this.nums);
 		clone.hand=this.hand.deepCopy();
 		clone.agent=this.agent.deepCopy();
+		clone.nums=new ArrayList<Integer>();
+		for(Integer num:nums){
+			clone.nums.add(new Integer(num));
+		}
 		return clone;
 	}
 	

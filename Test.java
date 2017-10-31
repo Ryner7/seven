@@ -5,8 +5,10 @@ import java.util.ArrayList;
  */
 public class Test {
 	public static void main(String args[]) {
+		test(100);
+	}
+	public static void test(int N){
 		MyUtil.always.pln("\n---Sevens---");
-		final int N = 10;
 		ArrayList<Player> players = new ArrayList<Player>();
 		int count;
 		int P = 4;
@@ -14,7 +16,7 @@ public class Test {
 		for (count = 0; count < P ; count++) {
 			players.add(new Player(count));
 		}
-		int[] agentList = {0, 0, 0, 2};
+		int[] agentList = {1, 1, 1, 2};
 		for (count = 0; count < P ; count++) {
 			player = players.get(count);
 			
@@ -48,15 +50,16 @@ public class Test {
 			scores.add(0);
 		}
 		for (int loop = 0 ; loop < N ; loop++) {
-			MyUtil.always.pln("---" + loop + "---");
+			MyUtil.always.p(  loop + ",");
 			result = sevens.playSevens(players);
 			for (int index = 0 ; index < scores.size() ; index++) {
 				scores.set(index, scores.get(index) + result.scores.get(index));
 			}
 		}
+		MyUtil.always.pln();
 		for (count = 0; count < scores.size() ; count++) {
 			MyUtil.always.p(players.get(count).name + " " );
-			MyUtil.always.pf("%.5f\n",((double) scores.get(count)) / (N * (players.size() - 1)));
+			MyUtil.always.pf("%.5f\n",((double) 2*scores.get(count)) / (N * (players.size() - 1)));
 		}
 //		for (int alpha = 0; alpha < players.size(); alpha++) {
 //			player = players.get(alpha);

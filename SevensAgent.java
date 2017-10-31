@@ -1,9 +1,11 @@
+import java.util.ArrayList;
+
 /**
  * Created by ryoto on 2017/10/17.
  */
 public class SevensAgent {
 	String name = "default";
-	
+	ArrayList<History> simHistories=new ArrayList<History>();
 	SevensAgent() {
 		name="default";
 	}

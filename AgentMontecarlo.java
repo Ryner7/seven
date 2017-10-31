@@ -3,12 +3,14 @@ import java.util.ArrayList;
 /**
  * Created by ryoto on 2017/10/30.
  */
-public class AgentMontecarlo extends SevensAgent{
+public class AgentMontecarlo extends SevensAgent {
 	String name = "monte";
-	AgentMontecarlo(){
-		name="monte";
+	
+	AgentMontecarlo() {
+		name = "monte";
 	}
-	Card strategy(Sevens sevens,int printDepth) {
+	
+	Card strategy(Sevens sevens, int printDepth) {
 		Cards playableAndHold = sevens.playableCards().getIntersection(sevens.turnPlayer.hand);
 		if (sevens.turnPlayer.hand.size() == 1 && playableAndHold.size() == 1) return playableAndHold.get(0);
 		int M = 1000;
@@ -25,9 +27,10 @@ public class AgentMontecarlo extends SevensAgent{
 		Player player;
 		Cards cards = new Cards();
 		Result result;
-		ArrayList<Integer> scores=new ArrayList<Integer>();
+		ArrayList<Integer> scores = new ArrayList<Integer>();
+		int score = 0;
 		for (Card card : playableAndHold) {
-			scores.add(0);
+			score = 0;
 			for (int loop = 0 ; loop < M / playableAndHold.size() ; loop++) {
 				simSevens = new Sevens();
 				simSevens.setupSevens(sevens.players, sevens.deck, sevens.layout, (sevens.turn + 1) % sevens.players.size(), sevens.totalTurn + 1, MyUtil.SIM, sevens.playersOrder, sevens.history, agents);
@@ -35,7 +38,7 @@ public class AgentMontecarlo extends SevensAgent{
 					player = simSevens.players.get(index);
 					if (sevens.turn != index) {
 						cards = cards.getUnion(player.hand);
-						player.hand=new Cards();
+						player.hand = new Cards();
 					}
 				}
 				cards.shuffle();
@@ -43,7 +46,7 @@ public class AgentMontecarlo extends SevensAgent{
 					if (sevens.turn == index) continue;
 					player = simSevens.players.get(index);
 					for (int count = 0 ; count < playersHandSize.get(index) ; count++) {
-						if(playersHandSize.get(index)==0)break;
+						if (playersHandSize.get(index) == 0) break;
 						player.hand.add(cards.remove(0));
 					}
 					player.hand.sortSuitRank();
@@ -55,12 +58,13 @@ public class AgentMontecarlo extends SevensAgent{
 					simSevens.turnPlayer.hand.removeCard(card);
 				}
 				//System.out.println(loop+"A");
-				result=simSevens.startSevens(MyUtil.SIM);
-				int tmp=scores.size()-1;
-				scores.set(tmp,scores.get(tmp)+result.scores.get(sevens.turn));
+				result = simSevens.startSevens(MyUtil.SIM);
+				int tmp = scores.size() - 1;
+				score += result.scores.get(sevens.playersOrder.get(sevens.turn));
 			}
+			scores.add(score);
 		}
-		int max=-1;
+		int max = -1;
 		int maxIndex = -1;
 		for (int index = 0 ; index < scores.size() ; index++) {
 			if (max < scores.get(index)) {
@@ -70,7 +74,8 @@ public class AgentMontecarlo extends SevensAgent{
 		}
 		return playableAndHold.get(maxIndex);
 	}
-	String getName(){
+	
+	String getName() {
 		return name;
 	}
 }

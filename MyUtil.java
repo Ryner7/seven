@@ -65,6 +65,9 @@ public class MyUtil {
 			case DEBUG:
 				debug.p(object);
 				break;
+			default:
+				
+				break;
 		}
 	}
 	
@@ -82,6 +85,8 @@ public class MyUtil {
 			case DEBUG:
 				debug.pln(object);
 				break;
+			default:
+				break;
 		}
 	}
 	
@@ -98,6 +103,8 @@ public class MyUtil {
 				break;
 			case DEBUG:
 				debug.pf(format, args);
+				break;
+			default:
 				break;
 		}
 	}
