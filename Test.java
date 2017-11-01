@@ -5,7 +5,7 @@ import java.util.ArrayList;
  */
 public class Test {
 	public static void main(String args[]) {
-		test(100);
+		test(10000);
 	}
 	public static void test(int N){
 		MyUtil.always.pln("\n---Sevens---");
@@ -50,7 +50,7 @@ public class Test {
 			scores.add(0);
 		}
 		for (int loop = 0 ; loop < N ; loop++) {
-			MyUtil.always.p(  loop + ",");
+			MyUtil.always.p(  "---"+loop + "---\n");
 			result = sevens.playSevens(players);
 			for (int index = 0 ; index < scores.size() ; index++) {
 				scores.set(index, scores.get(index) + result.scores.get(index));

@@ -13,7 +13,7 @@ public class AgentMontecarlo extends SevensAgent {
 	Card strategy(Sevens sevens, int printDepth) {
 		Cards playableAndHold = sevens.playableCards().getIntersection(sevens.turnPlayer.hand);
 		if (sevens.turnPlayer.hand.size() == 1 && playableAndHold.size() == 1) return playableAndHold.get(0);
-		int M = 1000;
+		int M = 100;
 		if (sevens.turnPlayer.nums.get(Sevens.PASS_INDEX) > 1) {
 			playableAndHold.add(Card.createCard(Card.PASS_RANK, Card.SPECIAL_SUIT));
 		}
@@ -58,7 +58,7 @@ public class AgentMontecarlo extends SevensAgent {
 					simSevens.turnPlayer.hand.removeCard(card);
 				}
 				//System.out.println(loop+"A");
-				result = simSevens.startSevens(MyUtil.SIM);
+				result = simSevens.startSevens(printDepth+1);
 				int tmp = scores.size() - 1;
 				score += result.scores.get(sevens.playersOrder.get(sevens.turn));
 			}

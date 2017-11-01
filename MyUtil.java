@@ -8,16 +8,19 @@ public class MyUtil {
 	static final int SIM = 2;
 	static final int PLAY = 1;
 	static final int ALWAYS = 0;
-	static MyUtil debug = new MyUtil(false);
-	static MyUtil sim = new MyUtil(false);
-	static MyUtil play = new MyUtil(false);
-	static MyUtil always = new MyUtil(true);
+	static MyUtil debug = new MyUtil(0);
+	static MyUtil sim = new MyUtil(0);
+	static MyUtil play = new MyUtil(0);
+	static MyUtil always = new MyUtil(1);
 	
 	MyUtil() {
 	}
 	
 	MyUtil(boolean print) {
 		this.print = print;
+	}
+	MyUtil(int print){
+		this.print=(print!=0);
 	}
 	
 	public void p() {

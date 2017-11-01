@@ -33,9 +33,9 @@ public class Sevens {
 		myUtil.pln("setup sevens");
 		beginSevens(players);
 		myUtil.pln("start sevens");
-		Result result = startSevens(1);
+		Result result = startSevens(0);
 		myUtil.pln("close sevens");
-		closeSevens(1);
+		closeSevens(0);
 		return result;
 	}
 	
@@ -100,10 +100,10 @@ public class Sevens {
 		}
 	}
 	
-	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout, int argTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory ,ArrayList<SevensAgent> agents) {
+	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout, int argTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory, ArrayList<SevensAgent> agents) {
 		players = new ArrayList<Player>();
 		retireNum = 0;
-		remainingNum = argPlayers.size()-1;
+		remainingNum = argPlayers.size() - 1;
 		for (Player player : argPlayers) {
 			players.add(player.deepCopy());
 			switch (player.nums.get(END_INDEX)) {
@@ -115,9 +115,9 @@ public class Sevens {
 					break;
 			}
 		}
-		for(int index=0;index<players.size();index++){
-			Player player=players.get(index);
-			player.agent=agents.get(index);
+		for (int index = 0 ; index < players.size() ; index++) {
+			Player player = players.get(index);
+			player.agent = agents.get(index);
 		}
 		deck = argDeck.deepCopy();
 		layout = argLayout.deepCopy();
@@ -129,7 +129,7 @@ public class Sevens {
 			playersOrder.add(order);
 		}
 		history = argHistory.deepCopy();
-		turnPlayer=players.get(playersOrder.get((turn+players.size()-1)%players.size()));
+		turnPlayer = players.get(playersOrder.get((turn + players.size() - 1) % players.size()));
 	}
 	
 	
@@ -231,24 +231,25 @@ public class Sevens {
 	}
 	
 	void closeSevens(int printDepth) {
+		MyUtil.dpln("", MyUtil.PLAY + printDepth);
 		int count;
 		for (Player player : players) {//順序表示
 			count = players.size() - player.nums.get(SCORE_INDEX);
 			switch (count) {
 				case 1:
-					MyUtil.dp("1st: ",printDepth);
+					MyUtil.dp("1st: ", MyUtil.PLAY + printDepth);
 					break;
 				case 2:
-					MyUtil.dp("2nd: ",printDepth);
+					MyUtil.dp("2nd: ", MyUtil.PLAY + printDepth);
 					break;
 				case 3:
-					MyUtil.dp("3rd: ",printDepth);
+					MyUtil.dp("3rd: ", MyUtil.PLAY + printDepth);
 					break;
 				default:
-					MyUtil.dp(count + "th: ",printDepth);
+					MyUtil.dp(count + "th: ", MyUtil.PLAY + printDepth);
 					break;
 			}
-			MyUtil.dpln(player.name,printDepth);
+			MyUtil.dpln(player.name, MyUtil.PLAY + printDepth);
 		}
 	}
 	
