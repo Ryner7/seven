@@ -4,7 +4,7 @@ import java.util.ArrayList;
  * Created by ryoto on 2017/10/17.
  */
 public class Test {
-	static final int M=100;
+	static final int M=1000;
 	public static void main(String args[]) {
 		test(100);
 	}
