@@ -4,8 +4,9 @@ import java.util.ArrayList;
  * Created by ryoto on 2017/10/17.
  */
 public class Test {
+	static final int M=100;
 	public static void main(String args[]) {
-		test(10000);
+		test(100);
 	}
 	public static void test(int N){
 		MyUtil.always.pln("\n---Sevens---");
@@ -34,7 +35,7 @@ public class Test {
 					player.agent=new AgentMontecarlo();
 					break;
 				case 3:
-//					//player.agent=new AgentGamma();
+					player.agent=new AgentUpp();
 					break;
 				default:
 					player.agent = new SevensAgent();

@@ -35,7 +35,7 @@ public class Sevens {
 		myUtil.pln("start sevens");
 		Result result = startSevens(0);
 		myUtil.pln("close sevens");
-		closeSevens(0);
+		closeSevens();
 		return result;
 	}
 	
@@ -45,6 +45,7 @@ public class Sevens {
 		playersOrder = new ArrayList<Integer>();
 		for (int count = 0 ; count < players.size() ; count++) {
 			playersOrder.add(count);
+			players.get(count).agent.simHistories=new ArrayList<>();//履歴削除
 		}
 		remainingNum = players.size() - 1;
 		retireNum = 0;
