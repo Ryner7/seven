@@ -24,6 +24,7 @@ public class Sevens {
 	int remainingNum;
 	int retireNum;
 	int totalTurn = -1;
+	int initTurn=0;
 	
 	Sevens() {
 	}
@@ -35,7 +36,7 @@ public class Sevens {
 		myUtil.pln("start sevens");
 		Result result = startSevens(0);
 		myUtil.pln("close sevens");
-		closeSevens();
+		closeSevens(0);
 		return result;
 	}
 	
@@ -122,7 +123,7 @@ public class Sevens {
 		}
 		deck = argDeck.deepCopy();
 		layout = argLayout.deepCopy();
-		turn = argTurn;
+		initTurn = argTurn;
 		totalTurn = argTotalTurn;
 		printDepth = argPrintDepth;
 		playersOrder = new ArrayList<Integer>();
@@ -130,7 +131,7 @@ public class Sevens {
 			playersOrder.add(order);
 		}
 		history = argHistory.deepCopy();
-		turnPlayer = players.get(playersOrder.get((turn + players.size() - 1) % players.size()));
+		turnPlayer = players.get(playersOrder.get((initTurn + players.size() - 1) % players.size()));
 	}
 	
 	
@@ -140,10 +141,11 @@ public class Sevens {
 		ArrayList<Cards> hands;
 		Card playCard;
 		//	Player p;
+		turn=initTurn;
 	   PLAY:
 		while (true) {
 		   TURN:
-			for (turn = 0; turn < players.size() ; turn++) {
+			for (; turn < players.size() ; turn++) {
 				turnPlayer = players.get(playersOrder.get(turn));
 				if (turnPlayer.nums.get(END_INDEX) != REMAINING_NUM) continue;
 				totalTurn++;
@@ -219,6 +221,7 @@ public class Sevens {
 					}
 				}
 			}
+			turn=0;
 		}
 		Result result = new Result();
 		for (Player p : players) {
