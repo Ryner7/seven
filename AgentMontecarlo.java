@@ -53,6 +53,7 @@ public class AgentMontecarlo extends AgentSevens {
 		Simulation simulation =new Simulation();
 		History history;
 		ArrayList<History> histories=new ArrayList<>();
+		Cards simCards;
 		for (Card card : playableAndHold) {
 			score = 0;
 			for (int loop = 0 ; loop < m / playableAndHold.size() ; loop++) {
@@ -66,6 +67,7 @@ public class AgentMontecarlo extends AgentSevens {
 					}
 				}
 				cards.shuffle();
+				simCards=cards.deepCopy();
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
 					if (sevens.turn == index) continue;
 					player = simSevens.players.get(index);

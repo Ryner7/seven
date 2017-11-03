@@ -10,7 +10,9 @@ public class History {
 	ArrayList<String> strings = new ArrayList<String>();
 	ArrayList<Integer> playersOrder = new ArrayList<Integer>();
 	int simTurn = -1;
+	ArrayList<Cards> simHands=new ArrayList<Cards>();
 	ArrayList<ArrayList<Cards>> handsHistory = new ArrayList<ArrayList<Cards>>();
+	ArrayList<Integer> scores;
 	
 	History() {
 	
