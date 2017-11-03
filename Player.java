@@ -5,7 +5,7 @@ import java.util.ArrayList;
  */
 public class Player {
 	String name;
-	SevensAgent agent;
+	AgentSevens agent;
 	Cards hand =new Cards();
 	ArrayList<Integer> nums;
 	int key;

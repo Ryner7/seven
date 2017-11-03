@@ -3,7 +3,7 @@ import java.util.ArrayList;
 /**
  * Created by ryoto on 2017/10/30.
  */
-public class AgentMontecarlo extends SevensAgent {
+public class AgentMontecarlo extends AgentSevens {
 	String name = "monte ";
 	
 	AgentMontecarlo() {
@@ -17,9 +17,9 @@ public class AgentMontecarlo extends SevensAgent {
 		if (sevens.turnPlayer.nums.get(Sevens.PASS_INDEX) > 1) {
 			playableAndHold.add(Card.createCard(Card.PASS_RANK, Card.SPECIAL_SUIT));
 		}
-		ArrayList<SevensAgent> agents = new ArrayList<>();
+		ArrayList<AgentSevens> agents = new ArrayList<>();
 		for (int index = 0 ; index < sevens.players.size() ; index++) {
-			agents.add(new SevensAgent());
+			agents.add(new AgentSevens());
 		}
 		Sevens simSevens;
 		ArrayList<Integer> playersHandSize = new ArrayList<>();
@@ -43,7 +43,7 @@ public class AgentMontecarlo extends SevensAgent {
 		return playableAndHold.get(maxIndex);
 	}
 	
-	Simulation montecarlo(Sevens sevens, int printDepth, Cards playableAndHold, int m, ArrayList<SevensAgent> agents, ArrayList<Integer> playersHandSize, Cards cards) {
+	Simulation montecarlo(Sevens sevens, int printDepth, Cards playableAndHold, int m, ArrayList<AgentSevens> agents, ArrayList<Integer> playersHandSize, Cards cards) {
 		int score;
 		Sevens simSevens;
 		Player player;

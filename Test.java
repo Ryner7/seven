@@ -1,3 +1,5 @@
+import com.sun.jndi.toolkit.ctx.AtomicDirContext;
+
 import java.util.ArrayList;
 
 /**
@@ -6,9 +8,13 @@ import java.util.ArrayList;
 public class Test {
 	static final int M=1000;
 	public static void main(String args[]) {
-		test(100);
+		for(int count=1;count<4;count++){
+			
+			int[] Agents={0,count,4-count,0,0};
+			test(100, Agents);
+		}
 	}
-	public static void test(int N){
+	public static void test(int N,int[] argAgentList){
 		MyUtil.always.pln("\n---Sevens---");
 		ArrayList<Player> players = new ArrayList<Player>();
 		int count;
@@ -17,16 +23,24 @@ public class Test {
 		for (count = 0; count < P ; count++) {
 			players.add(new Player(count));
 		}
-		int[] agentList = {1, 1, 1, 2};
+		ArrayList<Integer> agentList=new ArrayList<>();
+		for(count=0;count<argAgentList.length;count++){
+			int num=argAgentList[count];
+			while(num>0){
+				agentList.add(count);
+				num--;
+			}
+		}
+		//int[] agentList = {1, 1, 1, 2};
 		for (count = 0; count < P ; count++) {
 			player = players.get(count);
 			
-			switch (agentList[count]) {
+			switch (agentList.get(count)) {
 				case -1:
 					//player.agent=new AgentManual();
 					break;
 				case 0:
-					player.agent = new SevensAgent();
+					player.agent = new AgentSevens();
 					break;
 				case 1:
 					player.agent=new AgentRandom();
@@ -38,7 +52,7 @@ public class Test {
 					player.agent=new AgentUpp();
 					break;
 				default:
-					player.agent = new SevensAgent();
+					player.agent = new AgentSevens();
 					break;
 			}
 			player.name = new String(player.agent.getName() + " " + count);

@@ -3,7 +3,7 @@ import java.util.Scanner;
 /**
  * Created by ryoto on 2017/10/30.
  */
-public class AgentManual extends SevensAgent {
+public class AgentManual extends AgentSevens {
 	String name = "manual";
 	AgentManual(){
 		name="manual";

@@ -102,7 +102,7 @@ public class Sevens {
 		}
 	}
 	
-	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout, int argTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory, ArrayList<SevensAgent> agents) {
+	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout, int argTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory, ArrayList<AgentSevens> agents) {
 		players = new ArrayList<Player>();
 		retireNum = 0;
 		remainingNum = argPlayers.size() - 1;
