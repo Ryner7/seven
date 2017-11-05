@@ -92,10 +92,11 @@ public class AgentUpp extends AgentMontecarlo {
 				worldCopy = Cards.cardsListDeepCopy(world);
 				Cards test = new Cards();
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
-					//player = simSevens.players.get(index);
+					world.get(index).sortSuitRank();
+					world.get(index).showCards(0);
+					MyUtil.always.pln();
 					if (sevens.turn != index) {
 						test = test.getUnion(worldCopy.get(index));
-						//player.hand = new Cards();
 					}
 				}
 				test.sortSuitRank();
@@ -149,7 +150,7 @@ public class AgentUpp extends AgentMontecarlo {
 				for (player = 0; player < playerNum ; player++) {
 					if (secret.containsCard(rank, suit) && (handsNum.get(player) != 0)) {
 						//まだ出てないカード&&プレイヤーの手札が有る
-						playerProbability.add(playerNum * Test.M / Test.C);
+						playerProbability.add(playerNum * Test.M);
 					} else {
 						playerProbability.add(0);
 					}
@@ -164,7 +165,8 @@ public class AgentUpp extends AgentMontecarlo {
 						Cards hand = prevSimHistory.simHands.get(index);
 						probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
 						if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
-							int yyy = probability + xxx;
+							int yyy = probability * 2 - playerNum + 1 + xxx;
+							if (yyy <= 0) System.out.println("error");
 							playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);
 						}
 					}
@@ -173,7 +175,45 @@ public class AgentUpp extends AgentMontecarlo {
 		}
 		return playerRankSuitProbability;
 	}
-	
+//		ArrayList<ArrayList<ArrayList<Integer>>> probabilityEstimation(ArrayList<History> prevSimHistories, ArrayList<Integer> handsNum, Cards secret) {//世界の確率推定
+//ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbability = new ArrayList<>();
+//	int player, rank, suit, index, playerNum = handsNum.size();
+//	ArrayList<ArrayList<Integer>> playerRankProbability;
+//	ArrayList<Integer> playerProbability;
+//	int probability;
+//		for (suit = 1; suit < 5 ; suit++) {
+//		playerRankSuitProbability.add(new ArrayList<ArrayList<Integer>>());
+//		for (rank = 1; rank < 14 ; rank++) {
+//			playerProbability = new ArrayList<Integer>();
+//			playerRankSuitProbability.get(suit - 1).add(playerProbability);
+//			for (player = 0; player < playerNum ; player++) {
+//				if (secret.containsCard(rank, suit) && (handsNum.get(player) != 0)) {
+//					//まだ出てないカード&&プレイヤーの手札が有る
+//					playerProbability.add(playerNum * Test.M);
+//				} else {
+//					playerProbability.add(0);
+//				}
+//			}
+//		}
+//	}
+//		if (prevSimHistories != null) {
+//		for (History prevSimHistory : prevSimHistories) {
+//			for (index = 0; index < playerNum ; index++) {
+//				int xxx = prevSimHistory.scores.get(index);
+//				for (Card card : prevSimHistory.simHands.get(index)) {
+//					Cards hand = prevSimHistory.simHands.get(index);
+//					probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
+//					if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
+//						int yyy = probability * 2 - playerNum+1 + xxx;
+//						playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);
+//					}
+//				}
+//			}
+//		}
+//	}
+//		return playerRankSuitProbability;
+//}
+//
 	
 	ArrayList<Cards> genWorld(int size, ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbability, ArrayList<Integer> handsNum) {
 		//自分・上がった他プレイヤーもリストに含む
@@ -205,6 +245,7 @@ public class AgentUpp extends AgentMontecarlo {
 					} else {
 						probability = playerProbability.get(index);
 					}
+					if (probability == 0) continue;
 					sum += probability;
 					if (randNum <= sum) {
 						playersCards.get(index).add(Card.createCard(rank, suit));
