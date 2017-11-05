@@ -7,7 +7,7 @@ import java.util.Random;
 public class Sevens {
 	Player turnPlayer;
 	Cards deck, layout;
-	int turn;
+	int fakeTurn;
 	ArrayList<Integer> playersOrder;
 	ArrayList<Player> players;
 	final static int PASS_INDEX = 0;
@@ -60,7 +60,7 @@ public class Sevens {
 		history = new History();
 		deck = new Cards();
 		layout = new Cards();
-		turn = 0;
+		fakeTurn = 0;
 		deck = Cards.createCards(52);
 		
 		dealAll();
@@ -102,7 +102,7 @@ public class Sevens {
 		}
 	}
 	
-	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout, int argTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory, ArrayList<AgentSevens> agents) {
+	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout, int argFakeTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory, ArrayList<AgentSevens> agents) {
 		players = new ArrayList<Player>();
 		retireNum = 0;
 		remainingNum = argPlayers.size() - 1;
@@ -123,7 +123,7 @@ public class Sevens {
 		}
 		deck = argDeck.deepCopy();
 		layout = argLayout.deepCopy();
-		initTurn = argTurn;
+		initTurn = argFakeTurn;
 		totalTurn = argTotalTurn;
 		printDepth = argPrintDepth;
 		playersOrder = new ArrayList<Integer>();
@@ -141,12 +141,12 @@ public class Sevens {
 		ArrayList<Cards> hands;
 		Card playCard;
 		//	Player p;
-		turn=initTurn;
+		fakeTurn =initTurn;
 	   PLAY:
 		while (true) {
 		   TURN:
-			for (; turn < players.size() ; turn++) {
-				turnPlayer = players.get(playersOrder.get(turn));
+			for ( ; fakeTurn < players.size() ; fakeTurn++) {
+				turnPlayer = players.get(playersOrder.get(fakeTurn));
 				if (turnPlayer.nums.get(END_INDEX) != REMAINING_NUM) continue;
 				totalTurn++;
 //				alone=2;
@@ -166,7 +166,7 @@ public class Sevens {
 					for (Player p : players) {
 						hands.add(Cards.getReadonlyCards(p.hand));
 					}
-					history.addPage(turn, totalTurn, Cards.getReadonlyCard(Card.END_RANK, Card.SPECIAL_SUIT), "alone_and_finish", players);
+					history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(Card.END_RANK, Card.SPECIAL_SUIT), "alone_and_finish", players);
 					break PLAY;//終了
 				}
 				MyUtil.dpln("___", MyUtil.PLAY + printDepth);
@@ -202,9 +202,9 @@ public class Sevens {
 						retireNum++;
 						turnPlayer.nums.set(END_INDEX, RETIRE_NUM);
 						myUtil.p(" retire");
-						history.addPage(turn, totalTurn, Cards.getReadonlyCard(Card.PASS_RANK, Card.SPECIAL_SUIT), "retire", players);
+						history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(Card.PASS_RANK, Card.SPECIAL_SUIT), "retire", players);
 					} else {
-						history.addPage(turn, totalTurn, Cards.getReadonlyCard(Card.PASS_RANK, Card.SPECIAL_SUIT), "pass", players);
+						history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(Card.PASS_RANK, Card.SPECIAL_SUIT), "pass", players);
 					}
 				} else {
 					MyUtil.dpln("play " + playCard.getInfoStr(), MyUtil.PLAY + printDepth);
@@ -215,13 +215,13 @@ public class Sevens {
 						MyUtil.dpln("done", MyUtil.PLAY + printDepth);
 						turnPlayer.nums.set(END_INDEX, FINISH_NUM);
 						turnPlayer.nums.set(SCORE_INDEX, remainingNum--);
-						history.addPage(turn, totalTurn, playCard, "play and finish", players);
+						history.addPage(fakeTurn, totalTurn, playCard, "play and finish", players);
 					} else {
-						history.addPage(turn, totalTurn, playCard, "play", players);
+						history.addPage(fakeTurn, totalTurn, playCard, "play", players);
 					}
 				}
 			}
-			turn=0;
+			fakeTurn =0;
 		}
 		Result result = new Result();
 		for (Player p : players) {

@@ -58,10 +58,10 @@ public class AgentMontecarlo extends AgentSevens {
 			score = 0;
 			for (int loop = 0 ; loop < m / playableAndHold.size() ; loop++) {
 				simSevens = new Sevens();
-				simSevens.setupSevens(sevens.players, sevens.deck, sevens.layout, (sevens.turn + 1) % sevens.players.size(), sevens.totalTurn + 1, MyUtil.SIM, sevens.playersOrder, sevens.history, agents);
+				simSevens.setupSevens(sevens.players, sevens.deck, sevens.layout, (sevens.fakeTurn + 1) % sevens.players.size(), sevens.totalTurn + 1, MyUtil.SIM, sevens.playersOrder, sevens.history, agents);
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
 					player = simSevens.players.get(index);
-					if (sevens.turn != index) {
+					if (sevens.playersOrder.get(sevens.fakeTurn) != index) {
 						cards = cards.getUnion(player.hand);
 						player.hand = new Cards();
 					}
@@ -69,7 +69,7 @@ public class AgentMontecarlo extends AgentSevens {
 				cards.shuffle();
 				simCards=cards.deepCopy();
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
-					if (sevens.turn == index) continue;
+					if (sevens.playersOrder.get(sevens.fakeTurn) == index) continue;
 					player = simSevens.players.get(index);
 					for (int count = 0 ; count < playersHandSize.get(index) ; count++) {
 						if (playersHandSize.get(index) == 0) break;
@@ -88,12 +88,12 @@ public class AgentMontecarlo extends AgentSevens {
 					
 				}
 				history = sevens.history.deepCopy();
-				history.addPage(sevens.turn, sevens.totalTurn, card, string, simSevens.players);
+				history.addPage(sevens.fakeTurn, sevens.totalTurn, card, string, simSevens.players);
 				simSevens.history = history;
 				simSevens.history.simTurn = sevens.totalTurn;
 				result = simSevens.startSevens(printDepth + 1);
 				int tmp = scores.size() - 1;
-				score += result.scores.get(sevens.playersOrder.get(sevens.turn));
+				score += result.scores.get(sevens.playersOrder.get(sevens.fakeTurn));
 				result.history.scores=result.scores;
 				histories.add(result.history);
 			}
