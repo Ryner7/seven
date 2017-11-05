@@ -146,6 +146,13 @@ public class Cards extends ArrayList<Card> {
 		}
 		return copy;
 	}
+	static ArrayList<Cards> cardsListDeepCopy(ArrayList<Cards> cardsList){
+		ArrayList<Cards> cardsListCopy=new ArrayList<>();
+		for(Cards cards:cardsList){
+			cardsListCopy.add(cards.deepCopy());
+		}
+		return cardsListCopy;
+	}
 	
 	Cards shuffle() {
 		Random rnd = new Random();

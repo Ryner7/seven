@@ -28,10 +28,10 @@ public class AgentMontecarlo extends AgentSevens {
 		Cards cards = new Cards();
 //		Result result;
 		ArrayList<Integer> scores ;
-		Simulation simulation=montecarlo(sevens, printDepth, playableAndHold, M, agents, playersHandSize, cards);
-		scores=simulation.scores;
+		MontecarloSimulation montecarloSimulation =montecarlo(sevens, printDepth, playableAndHold, M, agents, playersHandSize, cards);
+		scores= montecarloSimulation.myScores;
 		
-		simHistories.add(simulation.histories);
+		simHistories.add(montecarloSimulation.histories);
 		int max = -1;
 		int maxIndex = -1;
 		for (int index = 0 ; index < scores.size() ; index++) {
@@ -43,14 +43,14 @@ public class AgentMontecarlo extends AgentSevens {
 		return playableAndHold.get(maxIndex);
 	}
 	
-	Simulation montecarlo(Sevens sevens, int printDepth, Cards playableAndHold, int m, ArrayList<AgentSevens> agents, ArrayList<Integer> playersHandSize, Cards cards) {
+	MontecarloSimulation montecarlo(Sevens sevens, int printDepth, Cards playableAndHold, int m, ArrayList<AgentSevens> agents, ArrayList<Integer> playersHandSize, Cards cards) {
 		int score;
 		Sevens simSevens;
 		Player player;
 		Result result;
 		String string="";
 		ArrayList<Integer>scores = new ArrayList<>();
-		Simulation simulation =new Simulation();
+		MontecarloSimulation montecarloSimulation =new MontecarloSimulation();
 		History history;
 		ArrayList<History> histories=new ArrayList<>();
 		Cards simCards;
@@ -94,21 +94,22 @@ public class AgentMontecarlo extends AgentSevens {
 				result = simSevens.startSevens(printDepth + 1);
 				int tmp = scores.size() - 1;
 				score += result.scores.get(sevens.playersOrder.get(sevens.turn));
+				result.history.scores=result.scores;
 				histories.add(result.history);
 			}
 			scores.add(score);
 		}
-		simulation.histories=histories;
-		simulation.scores=scores;
-		return simulation;
+		montecarloSimulation.histories=histories;
+		montecarloSimulation.myScores =scores;
+		return montecarloSimulation;
 	}
 	
 	String getName() {
 		return name;
 	}
 	
-	class Simulation {
+	class MontecarloSimulation {
 		ArrayList<History> histories;
-		ArrayList<Integer> scores;
+		ArrayList<Integer> myScores;
 	}
 }

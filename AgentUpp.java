@@ -29,9 +29,11 @@ public class AgentUpp extends AgentMontecarlo {
 		Cards cards = new Cards();
 //		Result result;
 		ArrayList<Integer> scores;
+		MontecarloSimulation simulation;
 		
-		Simulation simulation = upp(sevens, printDepth, playableAndHold, M, agents, playersHandSize, cards);
-		scores = simulation.scores;
+		simulation = upp(sevens, printDepth, playableAndHold, M, agents, playersHandSize, cards);
+		
+		scores = simulation.myScores;
 		prevSimHistories = simulation.histories;
 		simHistories.add(prevSimHistories);
 		
@@ -50,69 +52,28 @@ public class AgentUpp extends AgentMontecarlo {
 		return name;
 	}
 	
-	double stateValueEstimation(Sevens sevens, int printDepth, Cards playableAndHold, int M, ArrayList<AgentSevens> agents, ArrayList<Integer> playersHandSize, Cards cards) {
-		ArrayList<Integer> scores = montecarlo(sevens, printDepth, playableAndHold, M, agents, playersHandSize, cards).scores;
-		int max = -1;
-		int maxIndex = -1;
-		for (int index = 0 ; index < scores.size() ; index++) {
-			if (max < scores.get(index)) {
-				max = scores.get(index);
-				maxIndex = index;
-			}
-		}
-		return (double) max / M;
-	}
-	
-	ArrayList<ArrayList<ArrayList<Integer>>> probabilityEstimation(ArrayList<History> prevSimHistories, ArrayList<Integer> handsNum, Cards secret) {//世界の確率推定
-		ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbability = new ArrayList<>();
-		int player, rank, suit, index, playerNum = handsNum.size();
-		ArrayList<ArrayList<Integer>> playerRankProbability;
-		ArrayList<Integer> playerProbability;
-		int probability;
-		for (suit = 1; suit < 5 ; suit++) {
-			playerRankSuitProbability.add(new ArrayList<ArrayList<Integer>>());
-			for (rank = 1; rank < 14 ; rank++) {
-				playerProbability = new ArrayList<Integer>();
-				playerRankSuitProbability.get(suit - 1).add(playerProbability);
-				for (player = 0; player < playerNum ; player++) {
-					if (secret.containsCard(rank, suit) && (handsNum.get(player) != 0)) {
-						//まだ出てないカード&&プレイヤーの手札が有る
-						playerProbability.add(playerNum * Test.M / Test.C);
-					} else {
-						playerProbability.add(0);
-					}
-				}
-			}
-		}
-		for (History prevSimHistory : prevSimHistories) {
-			for (index = 0; index < playerNum ; index++) {
-				for (Card card : prevSimHistory.simHands.get(index)) {
-					probability = playerRankSuitProbability.get(card.suit).get(card.rank).get(index);
-					playerRankSuitProbability.get(card.suit).get(card.rank).set(index, probability + prevSimHistory.scores.get(index));
-				}
-			}
-		}
-		return playerRankSuitProbability;
-	}
-	
-	Simulation upp(Sevens sevens, int printDepth, Cards playableAndHold, int m, ArrayList<AgentSevens> agents, ArrayList<Integer> playersHandSize, Cards cards) {
+	MontecarloSimulation upp(Sevens sevens, int printDepth, Cards playableAndHold, int m, ArrayList<AgentSevens> agents, ArrayList<Integer> playersHandSize, Cards cards) {
 		int score;
 		Sevens simSevens;
 		Player player;
 		Result result;
 		String string = "";
 		ArrayList<Integer> scores = new ArrayList<>();
-		Simulation simulation = new Simulation();
+		MontecarloSimulation simulation = new MontecarloSimulation();
 		History history;
 		ArrayList<History> histories = new ArrayList<>();
 		Cards secret = new Cards();
 		ArrayList<Integer> handsNum = new ArrayList<>();
 		for (int index = 0 ; index < sevens.players.size() ; index++) {
-			secret.getIntersection(sevens.players.get(index).hand);
-			handsNum.add(sevens.players.get(index).hand.size());
+			if (sevens.turn == index) {
+				handsNum.add(0);
+			} else {
+				secret = secret.getUnion(sevens.players.get(index).hand);
+				handsNum.add(sevens.players.get(index).hand.size());
+			}
 		}
 		ArrayList<ArrayList<ArrayList<Integer>>> probabilities = probabilityEstimation(prevSimHistories, handsNum, secret);
-		ArrayList<Cards> world;
+		ArrayList<Cards> world, worldCopy;
 		
 		for (Card card : playableAndHold) {
 			score = 0;
@@ -126,9 +87,19 @@ public class AgentUpp extends AgentMontecarlo {
 						player.hand = new Cards();
 					}
 				}
-				
-				world = genWorld(sevens.players.size() - 1, probabilities);
-				
+				cards.sortSuitRank();
+				world = genWorld(sevens.players.size(), probabilities, handsNum);
+				worldCopy = Cards.cardsListDeepCopy(world);
+				Cards test = new Cards();
+				for (int index = 0 ; index < sevens.players.size() ; index++) {
+					//player = simSevens.players.get(index);
+					if (sevens.turn != index) {
+						test = test.getUnion(worldCopy.get(index));
+						//player.hand = new Cards();
+					}
+				}
+				test.sortSuitRank();
+				test = test;
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
 					if (sevens.turn == index) continue;
 					player = simSevens.players.get(index);
@@ -152,47 +123,95 @@ public class AgentUpp extends AgentMontecarlo {
 				result = simSevens.startSevens(printDepth + 1);
 				int tmp = scores.size() - 1;
 				score += result.scores.get(sevens.playersOrder.get(sevens.turn));
+				history.simHands = worldCopy;
+				history.scores = result.scores;
 				histories.add(result.history);
 			}
 			scores.add(score);
 		}
 		simulation.histories = histories;
-		simulation.scores = scores;
+		simulation.myScores = scores;
 		return simulation;
 	}
 	
-	ArrayList<ArrayList<Integer>> worldProbability() {
-		ArrayList<Integer> probability = new ArrayList<>();
-		
-		return null;
+	
+	ArrayList<ArrayList<ArrayList<Integer>>> probabilityEstimation(ArrayList<History> prevSimHistories, ArrayList<Integer> handsNum, Cards secret) {//世界の確率推定
+		ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbability = new ArrayList<>();
+		int player, rank, suit, index, playerNum = handsNum.size();
+		ArrayList<ArrayList<Integer>> playerRankProbability;
+		ArrayList<Integer> playerProbability;
+		int probability;
+		for (suit = 1; suit < 5 ; suit++) {
+			playerRankSuitProbability.add(new ArrayList<ArrayList<Integer>>());
+			for (rank = 1; rank < 14 ; rank++) {
+				playerProbability = new ArrayList<Integer>();
+				playerRankSuitProbability.get(suit - 1).add(playerProbability);
+				for (player = 0; player < playerNum ; player++) {
+					if (secret.containsCard(rank, suit) && (handsNum.get(player) != 0)) {
+						//まだ出てないカード&&プレイヤーの手札が有る
+						playerProbability.add(playerNum * Test.M / Test.C);
+					} else {
+						playerProbability.add(0);
+					}
+				}
+			}
+		}
+		if (prevSimHistories != null) {
+			for (History prevSimHistory : prevSimHistories) {
+				for (index = 0; index < playerNum ; index++) {
+					int xxx = prevSimHistory.scores.get(index);
+					for (Card card : prevSimHistory.simHands.get(index)) {
+						Cards hand = prevSimHistory.simHands.get(index);
+						probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
+						if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
+							int yyy = probability + xxx;
+							playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);
+						}
+					}
+				}
+			}
+		}
+		return playerRankSuitProbability;
 	}
 	
-	ArrayList<Cards> genWorld(int size, ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbability) {
+	
+	ArrayList<Cards> genWorld(int size, ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbability, ArrayList<Integer> handsNum) {
 		//自分・上がった他プレイヤーもリストに含む
 		ArrayList<Cards> playersCards = new ArrayList<>();
 		for (int count = 0 ; count < size ; count++) {
 			playersCards.add(new Cards());
 		}
-		int sum, randNum, rank, suit;
+		int sum, randNum, rank, suit, probability;
 		Random rand = new Random();
 		for (suit = 1; suit < 5 ; suit++) {
 			ArrayList<ArrayList<Integer>> playerRankProbability = playerRankSuitProbability.get(suit - 1);
 			for (rank = 1; rank < 14 ; rank++) {
 				ArrayList<Integer> playerProbability = playerRankProbability.get(rank - 1);
 				sum = 0;
-				for (int probability : playerProbability) {
-					sum += probability;
+				
+				for (int count = 0 ; count < playerProbability.size() ; count++) {
+					if (handsNum.get(count) <= playersCards.get(count).size()) {
+						;
+					} else {
+						sum += playerProbability.get(count);
+					}
 				}
 				if (sum == 0) continue;
 				randNum = rand.nextInt(sum);
 				sum = 0;
-				for (int index = 0, probability ; index < playerProbability.size() ; index++) {
-					probability = playerProbability.get(index);
+				for (int index = 0 ; index < playerProbability.size() ; index++) {
+					if (handsNum.get(index) <= playersCards.get(index).size()) {
+						probability = 0;
+					} else {
+						probability = playerProbability.get(index);
+					}
 					sum += probability;
 					if (randNum <= sum) {
 						playersCards.get(index).add(Card.createCard(rank, suit));
+						break;
 					}
 				}
+				
 			}
 		}
 		return playersCards;

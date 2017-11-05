@@ -6,12 +6,12 @@ import java.util.ArrayList;
  * Created by ryoto on 2017/10/17.
  */
 public class Test {
-	static final int M=1000;
+	static final int M=100;
 	static final int C=10;
 	public static void main(String args[]) {
 		for(int count=1;count<4;count++){
 			
-			int[] Agents={0,count,4-count,0,0};
+			int[] Agents={0,0,4-count,count,0};
 			test(100, Agents);
 		}
 	}
