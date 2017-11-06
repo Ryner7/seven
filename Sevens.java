@@ -58,6 +58,7 @@ public class Sevens {
 			playersOrder.set(index, tmp);
 		}
 		history = new History();
+		history.playersOrder=playersOrder;
 		deck = new Cards();
 		layout = new Cards();
 		fakeTurn = 0;

@@ -59,7 +59,7 @@ public class History {
 	
 	Card getLastPlayerAction(int playerIndex) {
 		for (int turn = playerTurns.size() - 1 ; turn >= 0 ; turn--) {
-			if (playerTurns.get(turn) == playerIndex) {
+			if (playersOrder.get(playerTurns.get(turn)) == playerIndex) {
 				return cards.get(turn);
 			}
 		}
@@ -70,7 +70,7 @@ public class History {
 		if(playerTurns.size()<=0)return null;
 		if(lowerLimitTurn<0)lowerLimitTurn=0;
 		for (int turn = playerTurns.size() - 1 ; turn >= lowerLimitTurn ; turn--) {
-			if (playerTurns.get(turn) == playerIndex) {
+			if (playersOrder.get(playerTurns.get(turn)) == playerIndex) {
 				return cards.get(turn);
 			}
 		}
@@ -82,7 +82,7 @@ public class History {
 		if(lowerLimitTurn<0)lowerLimitTurn=0;
 		
 		for (int turn = upperLimitTurn; turn >= lowerLimitTurn ; turn--) {
-			if (playerTurns.get(turn) == playerIndex) {
+			if (playersOrder.get(playerTurns.get(turn)) == playerIndex) {
 				return cards.get(turn);
 			}
 		}
@@ -91,7 +91,7 @@ public class History {
 	
 	int getLastActionTurn(int playerIndex) {
 		for (int turn = playerTurns.size() - 1 ; turn >= 0 ; turn--) {
-			if (playerTurns.get(turn) == playerIndex) {
+			if (playersOrder.get(playerTurns.get(turn)) == playerIndex) {
 				return turn;
 			}
 		}

@@ -100,13 +100,13 @@ public class AgentUpp extends AgentMontecarlo {
 					}
 				}
 				test.sortSuitRank();
-				test = test;
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
 					if (sevens.playersOrder.get(sevens.fakeTurn) == index) continue;
 					player = simSevens.players.get(index);
 					player.hand = world.get(index);
 					player.hand.sortSuitRank();
 				}
+				test = test;
 				if (card.rank == Card.PASS_RANK && card.suit == Card.SPECIAL_SUIT) {
 					simSevens.turnPlayer.nums.set(Sevens.PASS_INDEX, simSevens.turnPlayer.nums.get(Sevens.PASS_INDEX) - 1);
 					string = "pass";
@@ -138,7 +138,7 @@ public class AgentUpp extends AgentMontecarlo {
 	
 	ArrayList<ArrayList<ArrayList<Integer>>> probabilityEstimation(ArrayList<History> prevSimHistories, ArrayList<Integer> handsNum, Cards secret, History realHistory, int myIndex, int realTotalTurn) {//世界の確率推定
 		ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbability = new ArrayList<>();
-		int player, rank, suit, index, playerNum = handsNum.size();
+		int player, rank, suit, index=0, playerNum = handsNum.size();
 		ArrayList<ArrayList<Integer>> playerRankProbability;
 		ArrayList<Integer> playerProbability;
 		int probability;
@@ -150,7 +150,7 @@ public class AgentUpp extends AgentMontecarlo {
 				for (player = 0; player < playerNum ; player++) {
 					if (secret.containsCard(rank, suit) && (handsNum.get(player) != 0)) {
 						//まだ出てないカード&&プレイヤーの手札が有る
-						playerProbability.add(playerNum * Test.M);
+						playerProbability.add((playerNum+1) * Test.M);
 					} else {
 						playerProbability.add(0);
 					}
@@ -158,7 +158,7 @@ public class AgentUpp extends AgentMontecarlo {
 			}
 		}
 		int myLastTurn = 0;
-		Card realLastAction, simLastAction;
+		Card realLastAction=null, simLastAction=null;
 		if (prevSimHistories != null) {
 			myLastTurn = realHistory.getLastActionTurn(myIndex);
 			for (History prevSimHistory : prevSimHistories) {//一つの世界に注目する．
@@ -176,12 +176,14 @@ public class AgentUpp extends AgentMontecarlo {
 //						Cards hand = prevSimHistory.simHands.get(index);
 						probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
 						if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
-							int yyy = probability + (xxx * 2 - playerNum + 1);
+							int yyy = probability + (xxx * 2 - playerNum );
 							if (yyy <= 0) System.out.println("error " + card.getInfoStr() + " " + index + " ");
-							playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);
+							//playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);
+							//System.out.println(card.getInfoStr());
 						}
 					}
 				}
+				//System.out.println();
 			}
 		}
 		return playerRankSuitProbability;
@@ -288,7 +290,7 @@ public class AgentUpp extends AgentMontecarlo {
 			}
 			x++;
 			playersCards.get(player).add(Card.createCard(rank, suit));
-			System.out.println(rank+", "+suit+".");
+		//	System.out.println(rank+", "+suit+".");
 			for (index = 0; index < handsNum.size() ; index++) {
 				total -= playerRankSuitProbabilityCopy.get(suit - 1).get(rank - 1).get(index);
 				playerRankSuitProbabilityCopy.get(suit - 1).get(rank - 1).set(index, 0);
