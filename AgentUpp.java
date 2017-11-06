@@ -168,12 +168,12 @@ public class AgentUpp extends AgentMontecarlo {
 					realLastAction = realHistory.getLastPlayerAction(index, myLastTurn);
 					if (realLastAction == null) continue;
 					simLastAction = prevSimHistory.getPlayerAction(index, myLastTurn, realTotalTurn - 1);
-					if(simLastAction==null)continue;
+					if (simLastAction == null) continue;
 					if (!realLastAction.equal(simLastAction)) continue;
 					//現実もシミュレーションも同じアクションの場合
 					int xxx = prevSimHistory.scores.get(index);
 					for (Card card : prevSimHistory.simHands.get(index)) {
-						Cards hand = prevSimHistory.simHands.get(index);
+//						Cards hand = prevSimHistory.simHands.get(index);
 						probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
 						if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
 							int yyy = probability + (xxx * 2 - playerNum + 1);
@@ -236,44 +236,75 @@ public class AgentUpp extends AgentMontecarlo {
 	
 	ArrayList<Cards> genWorld(int size, ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbability, ArrayList<Integer> handsNum) {
 		//自分・上がった他プレイヤーもリストに含む
+		
+		//リスト複製
+		ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbabilityCopy = new ArrayList<>();
+		int player = 0, rank = 0, suit = 0, index, playerNum = handsNum.size(), total = 0, tmp;
+		//ArrayList<ArrayList<Integer>> playerRankProbability;
+		ArrayList<Integer> playerProbability;
+		for (suit = 1; suit < 5 ; suit++) {
+			playerRankSuitProbabilityCopy.add(new ArrayList<ArrayList<Integer>>());
+			for (rank = 1; rank < 14 ; rank++) {
+				playerProbability = new ArrayList<Integer>();
+				playerRankSuitProbabilityCopy.get(suit - 1).add(playerProbability);
+				for (player = 0; player < playerNum ; player++) {
+					
+					tmp = playerRankSuitProbability.get(suit - 1).get(rank - 1).get(player);
+					playerProbability.add(tmp);
+					total += tmp;
+				//	System.out.println(suit + "  " + rank + "  " + tmp + "  " + total + "  ");
+				}
+			}
+		}
+		
 		ArrayList<Cards> playersCards = new ArrayList<>();
 		for (int count = 0 ; count < size ; count++) {
 			playersCards.add(new Cards());
 		}
-		int sum, randNum, rank, suit, probability;
+		int randNum, probability;
 		Random rand = new Random();
-		for (suit = 1; suit < 5 ; suit++) {
-			ArrayList<ArrayList<Integer>> playerRankProbability = playerRankSuitProbability.get(suit - 1);
-			for (rank = 1; rank < 14 ; rank++) {
-				ArrayList<Integer> playerProbability = playerRankProbability.get(rank - 1);
-				sum = 0;
-				
-				for (int count = 0 ; count < playerProbability.size() ; count++) {
-					if (handsNum.get(count) <= playersCards.get(count).size()) {
-						;
-					} else {
-						sum += playerProbability.get(count);
+		ArrayList<ArrayList<Integer>> playerRankProbability;
+		int sum;
+		int x=0;
+		//System.out.println();
+//		Cards tmpCards=null;
+		while (total > 0) {
+		//	System.out.println(total);
+//			tmpCards=new Cards();
+			randNum = rand.nextInt(total);
+			sum = 0;
+		   LOOP:for (suit = 1; suit < 5 ; suit++) {
+				for (rank = 1; rank < 14 ; rank++) {
+					for (player = 0; player < handsNum.size() ; player++) {
+						probability = playerRankSuitProbabilityCopy.get(suit - 1).get(rank - 1).get(player);
+						sum += probability;
+						if (sum == 0 || probability == 0) continue;
+						if (randNum < sum) {
+							//playersCards.get(player).add(Card.createCard(rank,suit));
+							break LOOP;
+						}
 					}
 				}
-				if (sum == 0) continue;
-				randNum = rand.nextInt(sum);
-				sum = 0;
-				for (int index = 0 ; index < playerProbability.size() ; index++) {
-					if (handsNum.get(index) <= playersCards.get(index).size()) {
-						probability = 0;
-					} else {
-						probability = playerProbability.get(index);
-					}
-					if (probability == 0) continue;
-					sum += probability;
-					if (randNum <= sum) {
-						playersCards.get(index).add(Card.createCard(rank, suit));
-						break;
+			}
+			x++;
+			playersCards.get(player).add(Card.createCard(rank, suit));
+			System.out.println(rank+", "+suit+".");
+			for (index = 0; index < handsNum.size() ; index++) {
+				total -= playerRankSuitProbabilityCopy.get(suit - 1).get(rank - 1).get(index);
+				playerRankSuitProbabilityCopy.get(suit - 1).get(rank - 1).set(index, 0);
+//				tmpCards=tmpCards.getUnion(playersCards.get(index));
+			}
+//			tmpCards.showCardsWithSpace(0);
+			if(playersCards.get(player).size()>=handsNum.get(player)){
+				for (suit = 1; suit < 5 ; suit++) {
+					for (rank = 1; rank < 14 ; rank++) {
+						total-=playerRankSuitProbabilityCopy.get(suit - 1).get(rank - 1).get(player);
+						playerRankSuitProbabilityCopy.get(suit - 1).get(rank - 1).set(player,0);
 					}
 				}
-				
 			}
 		}
+//		tmpCards=tmpCards;
 		return playersCards;
 	}
 }
