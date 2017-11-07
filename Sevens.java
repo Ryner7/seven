@@ -18,6 +18,11 @@ public class Sevens {
 	final static int FINISH_NUM = 1;
 	final static int LAST_NUM = 2;
 	final static int RETIRE_NUM = 3;
+	final static String ALONE_STR="alone and finish";
+	final static String PLAY_AND_FINISH_STR="play and finish";
+	final static String PLAY_STR="play";
+	final static String PASS_STR="pass";
+	final static String RETIRE_STR="retire";
 	MyUtil myUtil = new MyUtil();
 	int printDepth = 0;
 	History history;
@@ -167,7 +172,7 @@ public class Sevens {
 					for (Player p : players) {
 						hands.add(Cards.getReadonlyCards(p.hand));
 					}
-					history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(Card.END_RANK, Card.SPECIAL_SUIT), "alone_and_finish", players);
+					history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(Card.END_RANK, Card.SPECIAL_SUIT), ALONE_STR, players);
 					break PLAY;//終了
 				}
 				MyUtil.dpln("___", MyUtil.PLAY + printDepth);
@@ -203,9 +208,9 @@ public class Sevens {
 						retireNum++;
 						turnPlayer.nums.set(END_INDEX, RETIRE_NUM);
 						myUtil.p(" retire");
-						history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(Card.PASS_RANK, Card.SPECIAL_SUIT), "retire", players);
+						history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(Card.PASS_RANK, Card.SPECIAL_SUIT), RETIRE_STR, players);
 					} else {
-						history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(Card.PASS_RANK, Card.SPECIAL_SUIT), "pass", players);
+						history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(Card.PASS_RANK, Card.SPECIAL_SUIT), PASS_STR, players);
 					}
 				} else {
 					MyUtil.dpln("play " + playCard.getInfoStr(), MyUtil.PLAY + printDepth);
@@ -216,9 +221,9 @@ public class Sevens {
 						MyUtil.dpln("done", MyUtil.PLAY + printDepth);
 						turnPlayer.nums.set(END_INDEX, FINISH_NUM);
 						turnPlayer.nums.set(SCORE_INDEX, remainingNum--);
-						history.addPage(fakeTurn, totalTurn, playCard, "play and finish", players);
+						history.addPage(fakeTurn, totalTurn, playCard, PLAY_AND_FINISH_STR, players);
 					} else {
-						history.addPage(fakeTurn, totalTurn, playCard, "play", players);
+						history.addPage(fakeTurn, totalTurn, playCard, PLAY_STR, players);
 					}
 				}
 			}
