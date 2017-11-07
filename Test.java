@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class Test {
 	static final int M=100;
-	static final int C=10;
+	//static final int C=10;
 	public static void main(String args[]) {
 		for(int count=1;count<4;count++){
 			

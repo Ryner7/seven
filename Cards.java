@@ -232,4 +232,16 @@ public class Cards extends ArrayList<Card> {
 			if (count % 13 == 0) MyUtil.play.dpln("", depth);
 		}
 	}
+	boolean checkDuplication(){
+		Cards cards =new Cards();
+		boolean check=false;
+		for(Card card :this){
+			if(cards.containsCard(card)){
+				System.out.println(card.getInfoStr());
+				check=true;
+			}
+			cards.add(card);
+		}
+		return check;
+	}
 }

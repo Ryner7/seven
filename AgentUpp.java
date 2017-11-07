@@ -95,9 +95,9 @@ public class AgentUpp extends AgentMontecarlo {
 					world.get(index).sortSuitRank();
 //					world.get(index).showCards(0);
 //					MyUtil.always.pln();
-					if (sevens.playersOrder.get(sevens.fakeTurn) != index) {
+//					if (sevens.playersOrder.get(sevens.fakeTurn) != index) {
 						test = test.getUnion(worldCopy.get(index));
-					}
+//					}
 				}
 				test.sortSuitRank();
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
@@ -106,6 +106,10 @@ public class AgentUpp extends AgentMontecarlo {
 					player.hand = world.get(index);
 					player.hand.sortSuitRank();
 				}
+				test=test.getUnion(sevens.layout.deepCopy());
+				test=test.getUnion(sevens.turnPlayer.hand.deepCopy());
+				test.checkDuplication();
+				test.sortSuitRank();
 				test = test;
 				if (card.rank == Card.PASS_RANK && card.suit == Card.SPECIAL_SUIT) {
 					simSevens.turnPlayer.nums.set(Sevens.PASS_INDEX, simSevens.turnPlayer.nums.get(Sevens.PASS_INDEX) - 1);
