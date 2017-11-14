@@ -5,11 +5,6 @@ import java.util.Random;
  * Created by ryoto on 2017/10/17.
  */
 public class Sevens {
-	Player turnPlayer;
-	Cards deck, layout;
-	int fakeTurn;
-	ArrayList<Integer> playersOrder;
-	ArrayList<Player> players;
 	final static int PASS_INDEX = 0;
 	final static int END_INDEX = 1;
 	final static int RANK_INDEX = 2;
@@ -18,18 +13,23 @@ public class Sevens {
 	final static int FINISH_NUM = 1;
 	final static int LAST_NUM = 2;
 	final static int RETIRE_NUM = 3;
-	final static String ALONE_STR="alone and finish";
-	final static String PLAY_AND_FINISH_STR="play and finish";
-	final static String PLAY_STR="play";
-	final static String PASS_STR="pass";
-	final static String RETIRE_STR="retire";
+	final static String ALONE_STR = "alone and finish";
+	final static String PLAY_AND_FINISH_STR = "play and finish";
+	final static String PLAY_STR = "play";
+	final static String PASS_STR = "pass";
+	final static String RETIRE_STR = "retire";
+	Player turnPlayer;
+	Cards deck, layout,allCards;
+	int fakeTurn;
+	ArrayList<Integer> playersOrder;
+	ArrayList<Player> players;
 	MyUtil myUtil = new MyUtil();
 	int printDepth = 0;
 	History history;
 	int remainingNum;
 	int retireNum;
 	int totalTurn = -1;
-	int initTurn=0;
+	int initTurn = 0;
 	
 	Sevens() {
 	}
@@ -51,7 +51,7 @@ public class Sevens {
 		playersOrder = new ArrayList<Integer>();
 		for (int count = 0 ; count < players.size() ; count++) {
 			playersOrder.add(count);
-			players.get(count).agent.simHistories=new ArrayList<>();//履歴削除
+			players.get(count).agent.simHistories = new ArrayList<>();//履歴削除
 		}
 		remainingNum = players.size() - 1;
 		retireNum = 0;
@@ -63,12 +63,12 @@ public class Sevens {
 			playersOrder.set(index, tmp);
 		}
 		history = new History();
-		history.playersOrder=playersOrder;
+		history.playersOrder = playersOrder;
 		deck = new Cards();
 		layout = new Cards();
 		fakeTurn = 0;
-		deck = Cards.createCards(52);
-		
+		deck = Cards.createCards(Test.cardSize);
+		allCards=deck.deepCopy();
 		dealAll();
 		
 		MyUtil.play.pln("デッキ表示");
@@ -108,7 +108,7 @@ public class Sevens {
 		}
 	}
 	
-	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout, int argFakeTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory, ArrayList<AgentSevens> agents) {
+	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout,Cards argAllCards, int argFakeTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory, ArrayList<AgentSevens> agents) {
 		players = new ArrayList<Player>();
 		retireNum = 0;
 		remainingNum = argPlayers.size() - 1;
@@ -129,6 +129,7 @@ public class Sevens {
 		}
 		deck = argDeck.deepCopy();
 		layout = argLayout.deepCopy();
+		allCards=argAllCards.deepCopy();
 		initTurn = argFakeTurn;
 		totalTurn = argTotalTurn;
 		printDepth = argPrintDepth;
@@ -147,7 +148,7 @@ public class Sevens {
 		ArrayList<Cards> hands;
 		Card playCard;
 		//	Player p;
-		fakeTurn =initTurn;
+		fakeTurn = initTurn;
 	   PLAY:
 		while (true) {
 		   TURN:
@@ -221,13 +222,13 @@ public class Sevens {
 						MyUtil.dpln("done", MyUtil.PLAY + printDepth);
 						turnPlayer.nums.set(END_INDEX, FINISH_NUM);
 						turnPlayer.nums.set(SCORE_INDEX, remainingNum--);
-						history.addPage(fakeTurn, totalTurn, playCard, PLAY_AND_FINISH_STR, players);
+						history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(playCard), PLAY_AND_FINISH_STR, players);
 					} else {
-						history.addPage(fakeTurn, totalTurn, playCard, PLAY_STR, players);
+						history.addPage(fakeTurn, totalTurn, Cards.getReadonlyCard(playCard), PLAY_STR, players);
 					}
 				}
 			}
-			fakeTurn =0;
+			fakeTurn = 0;
 		}
 		Result result = new Result();
 		for (Player p : players) {
@@ -274,27 +275,85 @@ public class Sevens {
 		return true;
 	}
 	
+	
 	Cards playableCards() {
 		Cards playable = new Cards();
 		int pos;
-		for (int suit = 1 ; suit < 5 ; suit++) {
-			for (int direction = -1 ; direction < 3 ; direction += 2) {
-				pos = 7;
-				while (pos != 0 && pos != 14) {
-					
-					//myUtil.p(bool+" "+pos+" "+suit);
-					
-					if (!layout.containsCard(pos, suit)) {
-						playable.add(Card.createCard(pos, suit));
-						//myUtil.pln("added"+playable.size());
-						break;
+		if (!Test.connected1And14) {
+			for (int suit = 1 ; suit < 5 ; suit++) {
+				for (int direction = -1 ; direction < 3 ; direction += 2) {
+					pos = 7;
+					while (pos != 0 && pos != 14) {
+						
+						//myUtil.p(bool+" "+pos+" "+suit);
+						
+						if (!layout.containsCard(pos, suit)) {
+							playable.add(Card.createCard(pos, suit));
+							//myUtil.pln("added"+playable.size());
+							break;
+						}
+						//myUtil.pln();
+						pos += direction;
 					}
-					//myUtil.pln();
-					pos += direction;
+					if (Test.connected1And14) {
+					
+					}
 				}
 			}
+			return playable;
+		} else {
+			boolean[] reachEnd = {false, false, false, false, false, false, false, false};
+			int flag = 0;
+			Cards cards;
+			for (int suit = 1 ; suit < 5 ; suit++) {
+				cards = new Cards();
+				for (int direction = -1 ; direction < 3 ; direction += 2) {
+					pos = 7;
+					while (pos != 0 && pos != 14) {
+						
+						//myUtil.p(bool+" "+pos+" "+suit);
+						
+						if (!layout.containsCard(pos, suit)) {
+							cards.add(Card.createCard(pos, suit));
+							//myUtil.pln("added"+playable.size());
+							flag = 1;
+							break;
+						}
+						//myUtil.pln();
+						pos += direction;
+					}
+					if (flag == 1) {
+						flag = 0;
+					} else {
+						reachEnd[2 * (suit - 1) + (direction == -1 ? 0 : 1)] = true;
+						if (pos == 0) pos = 13;
+						else if (pos == 14) pos = 1;
+						else for ( ; ; ) System.out.println("ERROR at playable");
+						while (pos != 0 && pos != 14 && pos != 7) {
+							
+							//myUtil.p(bool+" "+pos+" "+suit);
+							
+							if (!layout.containsCard(pos, suit)) {
+								cards.add(Card.createCard(pos, suit));
+								//myUtil.pln("added"+playable.size());
+								flag = 1;
+								break;
+							}
+							//myUtil.pln();
+							pos += direction;
+						}
+					}
+					
+				}
+				if (cards.size() == 0) ;
+				else if (!reachEnd[2 * (suit - 1)] && reachEnd[2 * (suit - 1) + 1]) playable.add(cards.get(1));
+				else if (reachEnd[2 * (suit - 1)] && !reachEnd[2 * (suit - 1) + 1]) playable.add(cards.get(0));
+				else if (!reachEnd[2 * (suit - 1)] && !reachEnd[2 * (suit - 1) + 1])
+					playable = playable.getUnion(cards);
+			}
+			
+			return playable;
 		}
-		return playable;
 	}
 	
 	void dealAll() {

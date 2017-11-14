@@ -73,4 +73,10 @@ public class Card {
 		}
 		return false;
 	}
+	boolean isJoker(){
+		if((this.rank==JOKER_RANK_1||this.rank==JOKER_RANK_2)&&this.suit==SPECIAL_SUIT){
+			return true;
+		}
+		return false;
+	}
 }

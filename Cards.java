@@ -28,7 +28,7 @@ public class Cards extends ArrayList<Card> {
 	static Cards getReadonlyCards(Cards cards) {
 		Cards readonlyCards = new Cards();
 		for (Card card : cards) {
-			readonlyCards.add(Cards.getReadonlyCard(card).deepCopy());
+			readonlyCards.add(Cards.getReadonlyCard(card));
 		}
 		return readonlyCards;
 	}
@@ -243,5 +243,21 @@ public class Cards extends ArrayList<Card> {
 			cards.add(card);
 		}
 		return check;
+	}
+	boolean hasJoker(){
+		for(Card card :this){
+			if(card.isJoker()){
+				return true;
+			}
+		}
+		return false;
+	}
+	Card getJoker(){
+		for(Card card:this){
+			if(card.isJoker()){
+				return card;
+			}
+		}
+		return null;
 	}
 }

@@ -58,7 +58,7 @@ public class AgentMontecarlo extends AgentSevens {
 			score = 0;
 			for (int loop = 0 ; loop < m / playableAndHold.size() ; loop++) {
 				simSevens = new Sevens();
-				simSevens.setupSevens(sevens.players, sevens.deck, sevens.layout, (sevens.fakeTurn + 1) % sevens.players.size(), sevens.totalTurn + 1, MyUtil.SIM, sevens.playersOrder, sevens.history, agents);
+				simSevens.setupSevens(sevens.players, sevens.deck, sevens.layout,sevens.allCards, (sevens.fakeTurn + 1) % sevens.players.size(), sevens.totalTurn + 1, MyUtil.SIM, sevens.playersOrder, sevens.history, agents);
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
 					player = simSevens.players.get(index);
 					if (sevens.playersOrder.get(sevens.fakeTurn) != index) {
@@ -88,7 +88,7 @@ public class AgentMontecarlo extends AgentSevens {
 					
 				}
 				history = sevens.history.deepCopy();
-				history.addPage(sevens.fakeTurn, sevens.totalTurn, card, string, simSevens.players);
+				history.addPage(sevens.fakeTurn, sevens.totalTurn, Cards.getReadonlyCard(card), string, simSevens.players);
 				simSevens.history = history;
 				simSevens.history.simTurn = sevens.totalTurn;
 				result = simSevens.startSevens(printDepth + 1);

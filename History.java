@@ -41,7 +41,8 @@ public class History {
 		for (int playerOrder : playersOrder) {
 			history.playersOrder.add(playerOrder);
 		}
-		history.cards = this.cards.deepCopy();
+		Cards cards=new Cards();
+		history.cards=Cards.getReadonlyCards(this.cards);
 		history.simTurn = simTurn;
 		if (handsHistory.size() > 0) {
 			for (ArrayList<Cards> hands : handsHistory) {
