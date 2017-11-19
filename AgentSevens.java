@@ -46,7 +46,7 @@ public class AgentSevens {
 	}
 	
 	int distanceFromSeven(Cards layout, Card target) {
-		if (!Test.connected1And14) {
+		if (!Test.connected1And13) {
 			return Math.abs(target.rank - 7);
 		} else {
 			boolean[] reachEnd = {false, false, false, false, false, false, false, false};

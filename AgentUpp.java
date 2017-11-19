@@ -146,6 +146,7 @@ public class AgentUpp extends AgentMontecarlo {
 		ArrayList<ArrayList<Integer>> playerRankProbability;
 		ArrayList<Integer> playerProbability;
 		int probability;
+		int defaultProbability = (playerNum + 1) * Test.M;
 		for (suit = 1; suit < 5 ; suit++) {
 			playerRankSuitProbability.add(new ArrayList<ArrayList<Integer>>());
 			for (rank = 1; rank < 14 ; rank++) {
@@ -154,7 +155,7 @@ public class AgentUpp extends AgentMontecarlo {
 				for (player = 0; player < playerNum ; player++) {
 					if (secret.containsCard(rank, suit) && (handsNum.get(player) != 0)) {
 						//まだ出てないカード&&プレイヤーの手札が有る
-						playerProbability.add((playerNum + 1) * Test.M);
+						playerProbability.add(defaultProbability);
 					} else {
 						playerProbability.add(0);
 					}
@@ -163,6 +164,8 @@ public class AgentUpp extends AgentMontecarlo {
 		}
 		int myLastTurn = 0;
 		Card realLastAction = null, simLastAction = null;
+		Cards allCards = Cards.createCards(52);
+		int lastActionSuit, lastActionRank, flag = 0, direction, flag1to13 = 0, flag13to1 = 0;
 		if (prevSimHistories != null) {
 			myLastTurn = realHistory.getLastActionTurn(myIndex);
 			for (History prevSimHistory : prevSimHistories) {//一つの世界に注目する．
@@ -171,24 +174,90 @@ public class AgentUpp extends AgentMontecarlo {
 					//一つ前の行動を取り出す．
 					realLastAction = realHistory.getLastPlayerAction(index, myLastTurn);
 					if (realLastAction == null) continue;
-					simLastAction = prevSimHistory.getPlayerAction(index, myLastTurn, realTotalTurn - 1);
-					if (simLastAction == null) continue;
-					if (!realLastAction.equal(simLastAction)) continue;
-					//現実もシミュレーションも同じアクションの場合
-					int xxx = prevSimHistory.scores.get(index);
-					for (Card card : prevSimHistory.simHands.get(index)) {
+					
+					if (Test.uppEstimationType == 0) {//点数から推測
+						simLastAction = prevSimHistory.getPlayerAction(index, myLastTurn, realTotalTurn - 1);
+						if (simLastAction == null) continue;//自分のターンまでに行動していたか確認．
+						if (!realLastAction.equal(simLastAction)) continue;
+						//現実もシミュレーションも同じアクションの場合
+						int xxx = prevSimHistory.scores.get(index);
+						for (Card card : prevSimHistory.simHands.get(index)) {
 //						Cards hand = prevSimHistory.simHands.get(index);
-						probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
-						if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
-							int yyy = probability + (xxx * 2 - playerNum);
-							if (yyy <= 0) System.out.println("error " + card.getInfoStr() + " " + index + " ");
-							//playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);
-							//System.out.println(card.getInfoStr());
+							probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
+							if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
+								int yyy = probability + (xxx * 2 - playerNum);
+								if (yyy <= 0) System.out.println("error " + card.getInfoStr() + " " + index + " ");
+								//playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);
+								//System.out.println(card.getInfoStr());
+							}
 						}
+					} else if (Test.uppEstimationType == 1) {//場の状況から推測
+						int lastIndexplayerTurn = realHistory.getLastActionTurn(index);
+						ArrayList<Cards> hands = realHistory.handsHistory.get(lastIndexplayerTurn);
+						
+						Cards layout = Cards.genDifferenceFromCards(hands, allCards);//場のカードを生成
+						//場のカードと手札からカードを推測
+						Cards knownCards = layout.getUnion(hands.get(myIndex));
+						lastActionSuit = realLastAction.suit;
+						lastActionRank = realLastAction.rank;
+						flag1to13 = 1;
+						flag13to1 = 1;
+						if (Test.connected1And13) {
+							//direction = (lastActionRank < 7) ? +1 : -1;
+							for (rank = 7; 0 < rank && rank < 14 ; rank++) {
+								if (!layout.containsCard(rank, lastActionSuit)) {
+									flag13to1 = 0;
+									break;
+								}
+							}
+							for (rank = 7; 0 < rank && rank < 14 ; rank--) {
+								if (!layout.containsCard(rank, lastActionSuit)) {
+									flag1to13 = 0;
+									break;
+								}
+							}
+							
+							
+						}
+						int xxx = playerNum + 1;
+						
+						if(lastActionSuit==5)continue;
+						if (flag1to13 == 0 && flag13to1 == 0) {//******7 8 9 10 J **
+							if (lastActionRank < 7) {
+								for (rank = 1; rank < 7 ; rank++) {
+									probability = playerRankSuitProbability.get(lastActionSuit - 1).get(rank - 1).get(index);
+									if (probability == 0) continue;
+									playerRankSuitProbability.get(lastActionSuit - 1).get(rank - 1).set(index, probability + xxx);
+								}
+							} else {
+								for (rank = 7; rank < 14 ; rank++) {
+									probability = playerRankSuitProbability.get(lastActionSuit - 1).get(rank - 1).get(index);
+									if (probability == 0) continue;
+									playerRankSuitProbability.get(lastActionSuit - 1).get(rank - 1).set(index, probability + xxx);
+								}
+							}
+						} else if (flag1to13 == 0 && flag13to1 == 1) {// 1*****7 8 9 10 J Q K->
+							for (rank = 1; rank < 14 ; rank++) {
+								probability = playerRankSuitProbability.get(lastActionSuit - 1).get(rank - 1).get(index);
+								if (probability == 0) continue;
+								playerRankSuitProbability.get(lastActionSuit - 1).get(rank - 1).set(index, probability + xxx);
+							}
+						} else if (flag1to13 == 1 && flag13to1 == 0) {// <- 1 2 3 4 5 6 7 8 ****** K
+							for (rank = 1; rank < 14 ; rank++) {
+								probability = playerRankSuitProbability.get(lastActionSuit - 1).get(rank - 1).get(index);
+								if (probability == 0) continue;
+								playerRankSuitProbability.get(lastActionSuit - 1).get(rank - 1).set(index, probability + xxx);
+							}
+						} else {// <- 1 2 3 4 5 6 7 8 9 10 J Q K ->
+							//for ( ; ; ) System.out.println("ERROR @ AgentUpp flag");
+						}
+						
+						
 					}
+					
 				}
-				//System.out.println();
 			}
+			//System.out.println();
 		}
 		return playerRankSuitProbability;
 	}
@@ -314,4 +383,5 @@ public class AgentUpp extends AgentMontecarlo {
 //		tmpCards=tmpCards;
 		return playersCards;
 	}
+	
 }

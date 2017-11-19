@@ -279,7 +279,7 @@ public class Sevens {
 	Cards playableCards() {
 		Cards playable = new Cards();
 		int pos;
-		if (!Test.connected1And14) {
+		if (!Test.connected1And13) {
 			for (int suit = 1 ; suit < 5 ; suit++) {
 				for (int direction = -1 ; direction < 3 ; direction += 2) {
 					pos = 7;
@@ -295,7 +295,7 @@ public class Sevens {
 						//myUtil.pln();
 						pos += direction;
 					}
-					if (Test.connected1And14) {
+					if (Test.connected1And13) {
 					
 					}
 				}

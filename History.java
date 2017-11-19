@@ -98,4 +98,15 @@ public class History {
 		}
 		return -1;
 	}
+	int getLastActionTurn(int playerIndex, int lowerLimitTurn, int upperLimitTurn) {
+		if (upperLimitTurn > playerTurns.size() - 1) upperLimitTurn = playerTurns.size() - 1;
+		if (lowerLimitTurn < 0) lowerLimitTurn = 0;
+		
+		for (int turn = upperLimitTurn ; turn >= lowerLimitTurn ; turn--) {
+			if (playersOrder.get(playerTurns.get(turn)) == playerIndex) {
+				return turn;
+			}
+		}
+		return -1;
+	}
 }

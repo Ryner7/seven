@@ -260,4 +260,18 @@ public class Cards extends ArrayList<Card> {
 		}
 		return null;
 	}
+	static Cards genDifferenceCardsFromPlayers(ArrayList<Player> players,Cards allCards){
+		Cards cards=new Cards();
+		for(Player player: players){
+			cards=cards.getUnion(player.hand);
+		}
+		return Cards.getReadonlyCards(allCards.getDifferenceSet(cards));
+	}
+	static Cards genDifferenceFromCards(ArrayList<Cards> subtrahend,Cards minuend){
+		Cards cards=new Cards();
+		for(Cards hand: subtrahend){
+			cards=cards.getUnion(hand);
+		}
+		return Cards.getReadonlyCards(minuend.getDifferenceSet(cards));
+	}
 }

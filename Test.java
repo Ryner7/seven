@@ -9,23 +9,28 @@ import java.util.Calendar;
  * Created by ryoto on 2017/10/17.
  */
 public class Test {
-	static final int M = 10;//シミュレーション回数
-	static final int gameNum=10;//ゲーム回数
-	static final boolean connected1And14 = true;
+	static final int M = 100;//シミュレーション回数
+	static final int gameNum = 100;//ゲーム回数
+	static final boolean connected1And13 = true;
 	static final int cardSize = 52;
+	static final int uppEstimationType = 1;
 	
 	//static final int C=10;
 	public static void main(String args[]) {
 		Calendar cal = Calendar.getInstance();
 		String fileName = "./log/"
-				+ cal.get(Calendar.MONTH) + "_"
-				+ cal.get(Calendar.DAY_OF_MONTH) + "_"
-				+ cal.get(Calendar.HOUR_OF_DAY) + "_"
-				+ cal.get(Calendar.MINUTE) + "_"
-				+ cal.get(Calendar.SECOND) + ".txt";
+				+ String.format("%02d", cal.get(Calendar.MONTH)) + "_"
+				+ String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)) + "_"
+				+ String.format("%02d", cal.get(Calendar.HOUR_OF_DAY)) + "_"
+				+ String.format("%02d", cal.get(Calendar.MINUTE)) + "_"
+				+ String.format("%02d", cal.get(Calendar.SECOND)) + ".txt";
+		
 		try {
 			FileWriter fw = new FileWriter(fileName, true);
 			ArrayList<Double> results = new ArrayList<>();
+			fw.write("simNum= " + M + "\n");
+			fw.write("gameNum= " + gameNum + "\n");
+			fw.write("\n");
 			for (int count = 0 ; count < 5 ; count++) {
 				results.add(0.0);
 			}
@@ -37,7 +42,7 @@ public class Test {
 				for (int index = 0 ; index < agentsResult.size() ; index++) {
 					Double agentResult = agentsResult.get(index);
 					results.set(index, agentResult + results.get(index));
-				//	System.out.println(results.get(index));
+					//	System.out.println(results.get(index));
 				}
 			}
 			MyUtil.always.pln();
@@ -68,8 +73,8 @@ public class Test {
 						fw.write("another ");
 						break;
 				}
-				MyUtil.always.p(String.format("%.5f\n",(results.get(index)/3)));
-				fw.write(String.format("%.5f\n",(results.get(index)/3)));
+				MyUtil.always.p(String.format("%.5f\n", (results.get(index) / 3)));
+				fw.write(String.format("%.5f\n", (results.get(index) / 3)));
 			}
 			
 			fw.close();
@@ -142,18 +147,18 @@ public class Test {
 		for (count = 0; count < scores.size() ; count++) {
 			MyUtil.always.p(players.get(count).name + " ");
 			fw.write(players.get(count).name + " ");
-			score=((double) 2 * scores.get(count)) / (N * (players.size() - 1));
+			score = ((double) 2 * scores.get(count)) / (N * (players.size() - 1));
 			MyUtil.always.pf("%.5f\n", score);
 			fw.write(String.format("%.5f\n", score));
-			agentsResult.set(agentList.get(count), score+agentsResult.get(agentList.get(count)));
+			agentsResult.set(agentList.get(count), score + agentsResult.get(agentList.get(count)));
 		}
 		fw.write("\n");
 		for (count = 0; count < argAgentList.length ; count++) {
 			if (argAgentList[count] == 0) {
 			
 			} else {
-				agentsResult.set(count, agentsResult.get(count) /  argAgentList[count]);
-			//	System.out.println(agentsResult.get(count)+" //");
+				agentsResult.set(count, agentsResult.get(count) / argAgentList[count]);
+				//	System.out.println(agentsResult.get(count)+" //");
 			}
 		}
 		return agentsResult;
