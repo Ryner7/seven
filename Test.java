@@ -10,15 +10,21 @@ import java.util.Calendar;
  */
 public class Test {
 	static final int M = 100;//シミュレーション回数
-	static final int gameNum = 100;//ゲーム回数
+	static final int gameNum = 10;//ゲーム回数
 	static final boolean connected1And13 = true;
 	static final int cardSize = 52;
-	static final int uppEstimationType = 1;
+	static final int uppEstimationType = 0;
+	static final int weightType = 0;
+	static final int monteNum = 10000,
+			uppNum = 10000,
+			modNum = 1000;
+	static int Ms;
+	static int playerNum = 4;
 	
 	//static final int C=10;
 	public static void main(String args[]) {
 		Calendar cal = Calendar.getInstance();
-		String fileName = "./log/"
+		String fileName = (System.getProperty("os.name").toLowerCase().startsWith("mac") ? "./log/" : "../log/")
 				+ String.format("%02d", cal.get(Calendar.MONTH)) + "_"
 				+ String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)) + "_"
 				+ String.format("%02d", cal.get(Calendar.HOUR_OF_DAY)) + "_"
@@ -30,8 +36,11 @@ public class Test {
 			ArrayList<Double> results = new ArrayList<>();
 			fw.write("simNum= " + M + "\n");
 			fw.write("gameNum= " + gameNum + "\n");
+			fw.write("uppEstimationType= " + uppEstimationType + "\n");
+			fw.write("weightType= " + weightType + "\n");
+			
 			fw.write("\n");
-			for (int count = 0 ; count < 5 ; count++) {
+			for (int count = 0 ; count < 6 ; count++) {
 				results.add(0.0);
 			}
 			for (int count = 1 ; count < 4 ; count++) {
@@ -68,13 +77,48 @@ public class Test {
 						MyUtil.always.p("upp     ");
 						fw.write("upp     ");
 						break;
+					case 4:
+						MyUtil.always.p("modupp  ");
+						fw.write("modupp     ");
+						break;
 					default:
 						MyUtil.always.p("another ");
 						fw.write("another ");
 						break;
 				}
-				MyUtil.always.p(String.format("%.5f\n", (results.get(index) / 3)));
-				fw.write(String.format("%.5f\n", (results.get(index) / 3)));
+				MyUtil.always.p(String.format("%.5f \t", (results.get(index) / 3)));
+				fw.write(String.format("%.5f \t", (results.get(index) / 3)));
+				switch (index) {
+					case -1:
+						//player.agent=new AgentManual();
+						break;
+					case 0:
+						MyUtil.always.p(AgentSevens.simNum);
+						fw.write(AgentSevens.simNum);
+						break;
+					case 1:
+						MyUtil.always.p(AgentRandom.simNum);
+						fw.write(AgentRandom.simNum);
+						break;
+					case 2:
+						MyUtil.always.p(AgentMontecarlo.simNum);
+						fw.write(AgentMontecarlo.simNum);
+						break;
+					case 3:
+						MyUtil.always.p(AgentUpp.simNum);
+						fw.write(AgentUpp.simNum);
+						break;
+					case 4:
+						MyUtil.always.p(AgentModupp.simNum);
+						fw.write(AgentModupp.simNum);
+						break;
+					default:
+						MyUtil.always.p("another ");
+						fw.write("another ");
+						break;
+				}
+				MyUtil.always.p("\n");
+				fw.write("\n");
 			}
 			
 			fw.close();
@@ -118,9 +162,15 @@ public class Test {
 					break;
 				case 2:
 					player.agent = new AgentMontecarlo();
+					player.agent.simNum = monteNum;
 					break;
 				case 3:
 					player.agent = new AgentUpp();
+					player.agent.simNum = uppNum;
+					break;
+				case 4:
+					player.agent = new AgentModupp();
+					player.agent.simNum = modNum;
 					break;
 				default:
 					player.agent = new AgentSevens();
@@ -170,5 +220,26 @@ public class Test {
 //			}
 //			myUtil.pln(" " + playersCopy.get(alpha).agent.getName());
 //		}
+	}
+	
+	static double weight(int turn, int max) {
+		int xxx = (turn) / max;//(52+playerNum*3);
+		switch (weightType) {
+			default:
+			case 0:
+				return 1;
+			case 1:
+				return Math.sin((Math.PI / 2) * xxx);
+			case 2:
+				return Math.cos((Math.PI / 2) * xxx);
+			case 3:
+				return Math.sin((Math.PI) * xxx);
+			case 4:
+				return Math.cos((Math.PI) * xxx);
+			case 5:
+				return xxx;
+			case 6:
+				return 1 - xxx;
+		}
 	}
 }

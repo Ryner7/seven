@@ -8,7 +8,7 @@ public class AgentSevens {
 	String name = "default";
 	ArrayList<ArrayList<History>> simHistories = new ArrayList<ArrayList<History>>();
 	ArrayList<History> prevSimHistories;
-	
+	static int simNum=0;
 	AgentSevens() {
 		name = "default";
 	}

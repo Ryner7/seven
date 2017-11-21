@@ -5,7 +5,6 @@ import java.util.ArrayList;
  */
 public class AgentMontecarlo extends AgentSevens {
 	String name = "monte ";
-	
 	AgentMontecarlo() {
 		name = "monte ";
 	}
@@ -56,7 +55,7 @@ public class AgentMontecarlo extends AgentSevens {
 		Cards simCards;
 		for (Card card : playableAndHold) {
 			score = 0;
-			for (int loop = 0 ; loop < m / playableAndHold.size() ; loop++) {
+			for (int loop = 0 ; loop < this.simNum / playableAndHold.size() ; loop++) {
 				simSevens = new Sevens();
 				simSevens.setupSevens(sevens.players, sevens.deck, sevens.layout,sevens.allCards, (sevens.fakeTurn + 1) % sevens.players.size(), sevens.totalTurn + 1, MyUtil.SIM, sevens.playersOrder, sevens.history, agents);
 				for (int index = 0 ; index < sevens.players.size() ; index++) {

@@ -156,6 +156,7 @@ public class Sevens {
 				turnPlayer = players.get(playersOrder.get(fakeTurn));
 				if (turnPlayer.nums.get(END_INDEX) != REMAINING_NUM) continue;
 				totalTurn++;
+				MyUtil.dp(".",printDepth);
 //				alone=2;
 //				for(Player p:players){
 //					if (p.nums.get(END_INDEX) == 1) ;//一人以外あがり
