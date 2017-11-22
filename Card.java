@@ -56,6 +56,7 @@ public class Card {
 	}
 	
 	String getInfoStr() {
+		if(1>suit||5<suit)System.out.print("suit= "+suit);
 		return COLOR[suit - 1] + SUIT[suit - 1] + "" + rank + (rank < 10 ? " " : "") + COLOR_END;
 	}
 	

@@ -4,19 +4,20 @@ import java.util.ArrayList;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Scanner;
 
 /**
  * Created by ryoto on 2017/10/17.
  */
 public class Test {
 	static final int M = 100;//シミュレーション回数
-	static final int gameNum = 10;//ゲーム回数
+	static final int gameNum = 100;//ゲーム回数
 	static final boolean connected1And13 = true;
 	static final int cardSize = 52;
 	static final int uppEstimationType = 0;
 	static final int weightType = 0;
-	static final int monteNum = 10000,
-			uppNum = 10000,
+	static final int monteNum = 1000,
+			uppNum = 1000,
 			modNum = 1000;
 	static int Ms;
 	static int playerNum = 4;
@@ -24,6 +25,8 @@ public class Test {
 	//static final int C=10;
 	public static void main(String args[]) {
 		Calendar cal = Calendar.getInstance();
+		Scanner scan=new Scanner(System.in);
+		String str=scan.next();
 		String fileName = (System.getProperty("os.name").toLowerCase().startsWith("mac") ? "./log/" : "../log/")
 				+ String.format("%02d", cal.get(Calendar.MONTH)) + "_"
 				+ String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)) + "_"
@@ -34,6 +37,7 @@ public class Test {
 		try {
 			FileWriter fw = new FileWriter(fileName, true);
 			ArrayList<Double> results = new ArrayList<>();
+			fw.write(str);
 			fw.write("simNum= " + M + "\n");
 			fw.write("gameNum= " + gameNum + "\n");
 			fw.write("uppEstimationType= " + uppEstimationType + "\n");
