@@ -274,4 +274,11 @@ public class Cards extends ArrayList<Card> {
 		}
 		return Cards.getReadonlyCards(minuend.getDifferenceSet(cards));
 	}
+	static int matchNum(Cards alphas,Cards betas){
+		int count=0;
+		for(Card alpha:alphas){
+			if(betas.containsCard(alpha))count++;
+		}
+		return count;
+	}
 }

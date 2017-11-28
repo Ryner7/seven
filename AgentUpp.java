@@ -6,6 +6,7 @@ import java.util.Random;
  */
 public class AgentUpp extends AgentMontecarlo {
 	//String name = "upp   ";
+	int uppSimNum = 100;
 	
 	AgentUpp() {
 		name = "upp   ";
@@ -32,9 +33,9 @@ public class AgentUpp extends AgentMontecarlo {
 		MontecarloSimulation simulation;
 		
 		simulation = upp(sevens, printDepth, playableAndHold, M, agents, playersHandSize, cards, sevens.history);
-		
+		MontecarloSimulation montecarloSimulation = montecarlo(sevens, printDepth, playableAndHold, M, agents, playersHandSize, cards);
 		scores = simulation.myScores;
-		prevSimHistories = simulation.histories;
+		prevSimHistories = montecarloSimulation.histories;
 		simHistories.add(prevSimHistories);
 		
 		int max = -1;
@@ -74,10 +75,12 @@ public class AgentUpp extends AgentMontecarlo {
 		}
 		ArrayList<ArrayList<ArrayList<Integer>>> probabilities = probabilityEstimation(prevSimHistories, handsNum, secret, realHistory, sevens.playersOrder.get(sevens.fakeTurn), sevens.totalTurn);
 		ArrayList<Cards> world, worldCopy;
-		
+		int loop = 0, loopNum = 0;
+		int matchNum=0;
 		for (Card card : playableAndHold) {
 			score = 0;
-			for (int loop = 0 ; loop < this.simNum / playableAndHold.size() ; loop++) {
+			loopNum++;
+			for ( ; loop < this.uppSimNum * loopNum / playableAndHold.size() ; loop++) {
 				simSevens = new Sevens();
 				simSevens.setupSevens(sevens.players, sevens.deck, sevens.layout, sevens.allCards, (sevens.fakeTurn + 1) % sevens.players.size(), sevens.totalTurn + 1, MyUtil.SIM, sevens.playersOrder, sevens.history, agents);
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
@@ -87,32 +90,26 @@ public class AgentUpp extends AgentMontecarlo {
 						player.hand = new Cards();
 					}
 				}
-				cards.sortSuitRank();
+//				cards.sortSuitRank();
 				world = genWorld(sevens.players.size(), probabilities, handsNum);
 				worldCopy = Cards.cardsListDeepCopy(world);
-				Cards test = new Cards();
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
 					world.get(index).sortSuitRank();
-//					world.get(index).showCards(0);
-//					MyUtil.always.pln();
-//					if (sevens.playersOrder.get(sevens.fakeTurn) != index) {
-					test = test.getUnion(worldCopy.get(index));
-//					}
 				}
-				test.sortSuitRank();
+				
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
-					if (sevens.playersOrder.get(sevens.fakeTurn) == index) continue;
-					player = simSevens.players.get(index);
-					player.hand = world.get(index);
-					player.hand.sortSuitRank();
+					if (sevens.playersOrder.get(sevens.fakeTurn) == index) {
+						simSevens.players.get(index).hand = sevens.players.get(index).hand.deepCopy();
+					} else {
+						player = simSevens.players.get(index);
+						player.hand = world.get(index);
+//						player.hand = sevens.players.get(index).hand.deepCopy();
+						player.hand.sortSuitRank();
+					}
 				}
-				test = test.getUnion(sevens.layout.deepCopy());
-				test = test.getUnion(sevens.turnPlayer.hand.deepCopy());
-				test.checkDuplication();
-				test.sortSuitRank();
-				test = test;
 				if (card.rank == Card.PASS_RANK && card.suit == Card.SPECIAL_SUIT) {
 					simSevens.turnPlayer.nums.set(Sevens.PASS_INDEX, simSevens.turnPlayer.nums.get(Sevens.PASS_INDEX) - 1);
+					//simSevens.turnPlayer.hand.removeCard(Card.PASS_RANK,Card.SPECIAL_SUIT);
 					string = Sevens.PASS_STR;
 					
 				} else {
@@ -121,15 +118,16 @@ public class AgentUpp extends AgentMontecarlo {
 					string = Sevens.PLAY_STR;
 					
 				}
+				matchNum+=countMatchNum(sevens.players,simSevens.players,sevens.playersOrder.get(sevens.fakeTurn));
 				history = sevens.history.deepCopy();
 				history.addPage(sevens.fakeTurn, sevens.totalTurn, Cards.getReadonlyCard(card), string, simSevens.players);
 				simSevens.history = history;
 				simSevens.history.simTurn = sevens.totalTurn;
 				result = simSevens.startSevens(printDepth + 1);
-				int tmp = scores.size() - 1;
+//				int tmp = scores.size() - 1;
 				score += result.scores.get(sevens.playersOrder.get(sevens.fakeTurn));
-				history.simHands = worldCopy;
-				history.scores = result.scores;
+				result.history.scores = result.scores;
+				result.history.simHands = worldCopy;
 				histories.add(result.history);
 			}
 			scores.add(score);
@@ -140,13 +138,44 @@ public class AgentUpp extends AgentMontecarlo {
 	}
 	
 	
+	
+	int preCheckEstimation(ArrayList<ArrayList<ArrayList<Integer>>> probabilities, ArrayList<Player> players, int myIndex) {
+		//(A^2+B^2+C^2)/(A+B+C)
+		int suit, rank, pIndex, probability, handNum;
+		int sum = 0;
+		Player player;
+		for (suit = 1; suit < 5 ; suit++) {
+			for (rank = 1; rank < 14 ; rank++) {
+				for (pIndex = 0; pIndex < players.size() ; pIndex++) {
+					sum += probabilities.get(suit).get(rank).get(pIndex);
+				}
+			}
+		}
+		int secretNum = 0;
+		for (pIndex = 0; pIndex < players.size() ; pIndex++) {
+			secretNum += players.get(pIndex).hand.size();
+		}
+		
+		for (suit = 1; suit < 5 ; suit++) {
+			for (rank = 1; rank < 14 ; rank++) {
+				for (pIndex = 0; pIndex < players.size() ; pIndex++) {
+					player = players.get(pIndex);
+					handNum = player.hand.size();
+					
+					probability = probabilities.get(suit).get(rank).get(pIndex);
+				}
+			}
+		}
+		return 0;
+	}
+	
 	ArrayList<ArrayList<ArrayList<Integer>>> probabilityEstimation(ArrayList<History> prevSimHistories, ArrayList<Integer> handsNum, Cards secret, History realHistory, int myIndex, int realTotalTurn) {//世界の確率推定
 		ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbability = new ArrayList<>();
 		int player, rank, suit, index = 0, playerNum = handsNum.size();
 		ArrayList<ArrayList<Integer>> playerRankProbability;
 		ArrayList<Integer> playerProbability;
 		int probability;
-		int defaultProbability = (playerNum + 1) * Test.M;
+		int defaultProbability = (playerNum + 1) * Test.M * 100;
 		for (suit = 1; suit < 5 ; suit++) {
 			playerRankSuitProbability.add(new ArrayList<ArrayList<Integer>>());
 			for (rank = 1; rank < 14 ; rank++) {
@@ -171,7 +200,7 @@ public class AgentUpp extends AgentMontecarlo {
 			if (prevSimHistories != null) {
 				myLastTurn = realHistory.getLastActionTurn(myIndex);
 				for (History prevSimHistory : prevSimHistories) {//一つの世界に注目する．
-					for (index = 0; index < playerNum ; index++) {//それぞれのプレイヤーについて，
+					for (index = 0; index < prevSimHistory.simHands.size() ; index++) {//それぞれのプレイヤーについて，
 						if (myIndex == index) continue;
 						//一つ前の行動を取り出す．
 						realLastAction = realHistory.getLastPlayerAction(index, myLastTurn);
@@ -186,7 +215,7 @@ public class AgentUpp extends AgentMontecarlo {
 //						Cards hand = prevSimHistory.simHands.get(index);
 							probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
 							if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
-								int yyy = probability - handsNum.get(index) * (xxx * 2 - playerNum);
+								int yyy = probability + Test.uppVal * (xxx * 2 - playerNum);
 								//if (yyy <= 0) playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, 1);//System.out.println("error " + card.getInfoStr() + " " + index + " ");
 								//else playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);
 								playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);

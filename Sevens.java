@@ -20,7 +20,7 @@ public class Sevens {
 	final static String RETIRE_STR = "retire";
 	Player turnPlayer;
 	Cards deck, layout,allCards;
-	int fakeTurn;
+	int fakeTurn;//0->1->2->3->0->…
 	ArrayList<Integer> playersOrder;
 	ArrayList<Player> players;
 	MyUtil myUtil = new MyUtil();

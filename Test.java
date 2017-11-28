@@ -12,21 +12,22 @@ import java.util.Scanner;
 public class Test {
 	static final int M = 100;//シミュレーション回数
 	static final int gameNum = 100;//ゲーム回数
-	static final boolean connected1And13 = true;
+	static final boolean connected1And13 = false;
 	static final int cardSize = 52;
 	static final int uppEstimationType = 0;
 	static final int weightType = 0;
-	static final int monteNum = 1000,
-			uppNum = 1000,
+	static final int monteNum = 10,
+			uppNum = 10,
 			modNum = 1000;
+	static final int uppVal = -1;
 	static int Ms;
 	static int playerNum = 4;
 	
 	//static final int C=10;
 	public static void main(String args[]) {
 		Calendar cal = Calendar.getInstance();
-		Scanner scan=new Scanner(System.in);
-		String str=scan.next();
+		Scanner scan = new Scanner(System.in);
+		String str = scan.next();
 		String fileName = (System.getProperty("os.name").toLowerCase().startsWith("mac") ? "./log/" : "../log/")
 				+ String.format("%02d", cal.get(Calendar.MONTH)) + "_"
 				+ String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)) + "_"
@@ -42,15 +43,17 @@ public class Test {
 			fw.write("gameNum= " + gameNum + "\n");
 			fw.write("uppEstimationType= " + uppEstimationType + "\n");
 			fw.write("weightType= " + weightType + "\n");
-			
+			fw.write("uppVal= " + uppVal + "\n");
 			fw.write("\n");
 			for (int count = 0 ; count < 6 ; count++) {
 				results.add(0.0);
 			}
 			for (int count = 1 ; count < 4 ; count++) {
 				
-				int[] Agents = {0, 0, 4 - count, count, 0};
-				//int[] Agents = {4, 0, 0, 0, 0};
+				int[] Agents = {0, 0, count, 4 - count, 0,0};
+				//int[] Agents = {4, 0, 0, 0, 0,0};
+				//int[] Agents = {0, 0, 3, 0, 0,1};
+				
 				ArrayList<Double> agentsResult = test(gameNum, Agents, fw);
 				for (int index = 0 ; index < agentsResult.size() ; index++) {
 					Double agentResult = agentsResult.get(index);
@@ -62,9 +65,7 @@ public class Test {
 			fw.write("\n");
 			for (int index = 0 ; index < results.size() ; index++) {
 				switch (index) {
-					case -1:
-						//player.agent=new AgentManual();
-						break;
+					
 					case 0:
 						MyUtil.always.p("default ");
 						fw.write("default ");
@@ -85,6 +86,10 @@ public class Test {
 						MyUtil.always.p("modupp  ");
 						fw.write("modupp     ");
 						break;
+					case 5:
+						MyUtil.always.p("manual  ");
+						fw.write("manual  ");
+						break;
 					default:
 						MyUtil.always.p("another ");
 						fw.write("another ");
@@ -97,24 +102,28 @@ public class Test {
 						//player.agent=new AgentManual();
 						break;
 					case 0:
-						MyUtil.always.p(AgentSevens.simNum);
-						fw.write(AgentSevens.simNum);
+						MyUtil.always.p("" + AgentSevens.simNum);
+						fw.write("" + AgentSevens.simNum);
 						break;
 					case 1:
-						MyUtil.always.p(AgentRandom.simNum);
-						fw.write(AgentRandom.simNum);
+						MyUtil.always.p("" + AgentRandom.simNum);
+						fw.write("" + AgentRandom.simNum);
 						break;
 					case 2:
-						MyUtil.always.p(AgentMontecarlo.simNum);
-						fw.write(AgentMontecarlo.simNum);
+						MyUtil.always.p("" + AgentMontecarlo.simNum);
+						fw.write("" + AgentMontecarlo.simNum);
 						break;
 					case 3:
-						MyUtil.always.p(AgentUpp.simNum);
-						fw.write(AgentUpp.simNum);
+						MyUtil.always.p("" + AgentUpp.simNum);
+						fw.write("" + AgentUpp.simNum);
 						break;
 					case 4:
-						MyUtil.always.p(AgentModupp.simNum);
-						fw.write(AgentModupp.simNum);
+						MyUtil.always.p("" + AgentModupp.simNum);
+						fw.write("" + AgentModupp.simNum);
+						break;
+					case 5:
+						MyUtil.always.p("" + AgentManual.simNum);
+						fw.write("" + AgentManual.simNum);
 						break;
 					default:
 						MyUtil.always.p("another ");
@@ -165,16 +174,24 @@ public class Test {
 					player.agent = new AgentRandom();
 					break;
 				case 2:
-					player.agent = new AgentMontecarlo();
-					player.agent.simNum = monteNum;
+					AgentMontecarlo monteAgent = new AgentMontecarlo();
+					monteAgent.monteSimNum = monteNum;
+					player.agent = monteAgent;
 					break;
 				case 3:
-					player.agent = new AgentUpp();
-					player.agent.simNum = uppNum;
+					AgentUpp uppAgent = new AgentUpp();
+					uppAgent.uppSimNum = uppNum;
+					player.agent = uppAgent;
 					break;
 				case 4:
-					player.agent = new AgentModupp();
-					player.agent.simNum = modNum;
+					AgentModupp modAgent = new AgentModupp();
+					modAgent.modSimNum = modNum;
+					player.agent = modAgent;
+					break;
+				case 5:
+					AgentManual manual = new AgentManual();
+					//manual=modSimNum = modNum;
+					player.agent = manual;
 					break;
 				default:
 					player.agent = new AgentSevens();
@@ -204,7 +221,8 @@ public class Test {
 			score = ((double) 2 * scores.get(count)) / (N * (players.size() - 1));
 			MyUtil.always.pf("%.5f\n", score);
 			fw.write(String.format("%.5f\n", score));
-			agentsResult.set(agentList.get(count), score + agentsResult.get(agentList.get(count)));
+			int agent=agentList.get(count);
+			agentsResult.set(agent, score + agentsResult.get(agent));
 		}
 		fw.write("\n");
 		for (count = 0; count < argAgentList.length ; count++) {

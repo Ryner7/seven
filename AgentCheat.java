@@ -1,14 +1,13 @@
 import java.util.ArrayList;
 
 /**
- * Created by ryoto on 2017/10/30.
+ * Created by ryoto on 2017/11/24.
  */
-public class AgentMontecarlo extends AgentSevens {
-	String name = "monte ";
-	int monteSimNum = 100;
+public class AgentCheat extends  AgentUpp {
+	//String name = "upp   ";
 	
-	AgentMontecarlo() {
-		name = "monte ";
+	AgentCheat() {
+		name = "cheat   ";
 	}
 	
 	Card strategy(Sevens sevens, int printDepth) {
@@ -29,10 +28,14 @@ public class AgentMontecarlo extends AgentSevens {
 		Cards cards = new Cards();
 //		Result result;
 		ArrayList<Integer> scores;
-		MontecarloSimulation montecarloSimulation = montecarlo(sevens, printDepth, playableAndHold, M, agents, playersHandSize, cards);
-		scores = montecarloSimulation.myScores;
+		MontecarloSimulation simulation;
 		
-		simHistories.add(montecarloSimulation.histories);
+		simulation = upp(sevens, printDepth, playableAndHold, M, agents, playersHandSize, cards, sevens.history);
+		MontecarloSimulation montecarloSimulation = montecarlo(sevens, printDepth, playableAndHold, M, agents, playersHandSize, cards);
+		scores = simulation.myScores;
+		prevSimHistories = montecarloSimulation.histories;
+		simHistories.add(prevSimHistories);
+		
 		int max = -1;
 		int maxIndex = -1;
 		for (int index = 0 ; index < scores.size() ; index++) {
@@ -43,23 +46,32 @@ public class AgentMontecarlo extends AgentSevens {
 		}
 		return playableAndHold.get(maxIndex);
 	}
-	
-	MontecarloSimulation montecarlo(Sevens sevens, int printDepth, Cards playableAndHold, int m, ArrayList<AgentSevens> agents, ArrayList<Integer> playersHandSize, Cards cards) {
+	MontecarloSimulation upp(Sevens sevens, int printDepth, Cards playableAndHold, int m, ArrayList<AgentSevens> agents, ArrayList<Integer> playersHandSize, Cards cards, History realHistory) {
 		int score;
 		Sevens simSevens;
 		Player player;
 		Result result;
 		String string = "";
 		ArrayList<Integer> scores = new ArrayList<>();
-		MontecarloSimulation montecarloSimulation = new MontecarloSimulation();
+		MontecarloSimulation simulation = new MontecarloSimulation();
 		History history;
 		ArrayList<History> histories = new ArrayList<>();
-		ArrayList<Cards> simHands;
+		Cards secret = new Cards();
+		ArrayList<Integer> handsNum = new ArrayList<>();
+		for (int index = 0 ; index < sevens.players.size() ; index++) {
+			if (sevens.playersOrder.get(sevens.fakeTurn) == index) {
+				handsNum.add(0);
+			} else {
+				secret = secret.getUnion(sevens.players.get(index).hand);
+				handsNum.add(sevens.players.get(index).hand.size());
+			}
+		}
+		ArrayList<ArrayList<ArrayList<Integer>>> probabilities = probabilityEstimation(prevSimHistories, handsNum, secret, realHistory, sevens.playersOrder.get(sevens.fakeTurn), sevens.totalTurn);
+		ArrayList<Cards> world, worldCopy;
 		
 		for (Card card : playableAndHold) {
 			score = 0;
-			for (int loop = 0 ; loop < this.monteSimNum / playableAndHold.size() ; loop++) {
-				
+			for (int loop = 0 ; loop < this.simNum / playableAndHold.size() ; loop++) {
 				simSevens = new Sevens();
 				simSevens.setupSevens(sevens.players, sevens.deck, sevens.layout, sevens.allCards, (sevens.fakeTurn + 1) % sevens.players.size(), sevens.totalTurn + 1, MyUtil.SIM, sevens.playersOrder, sevens.history, agents);
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
@@ -69,26 +81,34 @@ public class AgentMontecarlo extends AgentSevens {
 						player.hand = new Cards();
 					}
 				}
-				cards.shuffle();
-				simHands = new ArrayList<>();
+				cards.sortSuitRank();
+				world = genWorld(sevens.players.size(), probabilities, handsNum);
+				worldCopy = Cards.cardsListDeepCopy(world);
+				Cards test = new Cards();
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
-					if (sevens.playersOrder.get(sevens.fakeTurn) == index) {
-						//continue;
-						simSevens.players.get(index).hand = sevens.players.get(index).hand.deepCopy();
-					} else {
-						player = simSevens.players.get(index);
-						for (int count = 0 ; count < playersHandSize.get(index) ; count++) {
-							if (playersHandSize.get(index) == 0) break;
-							player.hand.add(cards.remove(0));
-						}
-						player.hand.sortSuitRank();
-					}
-					simHands.add(Cards.getReadonlyCards(simSevens.players.get(index).hand));
+					world.get(index).sortSuitRank();
+//					world.get(index).showCards(0);
+//					MyUtil.always.pln();
+//					if (sevens.playersOrder.get(sevens.fakeTurn) != index) {
+					test = test.getUnion(worldCopy.get(index));
+//					}
 				}
+				test.sortSuitRank();
+				for (int index = 0 ; index < sevens.players.size() ; index++) {
+					if (sevens.playersOrder.get(sevens.fakeTurn) == index) continue;
+					player = simSevens.players.get(index);
+					player.hand = sevens.players.get(index).hand.deepCopy();
+					player.hand.sortSuitRank();
+				}
+				test = test.getUnion(sevens.layout.deepCopy());
+				test = test.getUnion(sevens.turnPlayer.hand.deepCopy());
+				test.checkDuplication();
+				test.sortSuitRank();
+				test = test;
 				if (card.rank == Card.PASS_RANK && card.suit == Card.SPECIAL_SUIT) {
 					simSevens.turnPlayer.nums.set(Sevens.PASS_INDEX, simSevens.turnPlayer.nums.get(Sevens.PASS_INDEX) - 1);
-					//simSevens.turnPlayer.hand.removeCard(Card.PASS_RANK, Card.SPECIAL_SUIT);
 					string = Sevens.PASS_STR;
+					
 				} else {
 					simSevens.layout.add(card);
 					simSevens.turnPlayer.hand.removeCard(card);
@@ -99,38 +119,17 @@ public class AgentMontecarlo extends AgentSevens {
 				history.addPage(sevens.fakeTurn, sevens.totalTurn, Cards.getReadonlyCard(card), string, simSevens.players);
 				simSevens.history = history;
 				simSevens.history.simTurn = sevens.totalTurn;
-				result = simSevens.startSevens(printDepth + 2);
+				result = simSevens.startSevens(printDepth + 1);
 				int tmp = scores.size() - 1;
 				score += result.scores.get(sevens.playersOrder.get(sevens.fakeTurn));
-				result.history.scores = result.scores;
-				result.history.simHands = simHands;
+				history.simHands = worldCopy;
+				history.scores = result.scores;
 				histories.add(result.history);
 			}
 			scores.add(score);
 		}
-		montecarloSimulation.histories = histories;
-		montecarloSimulation.myScores = scores;
-		return montecarloSimulation;
-	}
-	
-	String getName() {
-		return name;
-	}
-	
-	int countMatchNum(ArrayList<Player> realPlayers, ArrayList<Player> imaginedPlayers, int excludedIndex) {
-		int sum = 0;
-		for (int real = 0 ; real < realPlayers.size() ; real++) {
-			if (real == excludedIndex) continue;
-			for (int image = 0 ; image < imaginedPlayers.size() ; image++) {
-				if (image == excludedIndex) continue;
-				sum += Cards.matchNum(realPlayers.get(real).hand, imaginedPlayers.get(image).hand);
-			}
-		}
-		return sum;
-	}
-	
-	class MontecarloSimulation {
-		ArrayList<History> histories;
-		ArrayList<Integer> myScores;
+		simulation.histories = histories;
+		simulation.myScores = scores;
+		return simulation;
 	}
 }

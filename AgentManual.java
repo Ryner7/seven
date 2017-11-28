@@ -14,6 +14,9 @@ public class AgentManual extends AgentSevens {
 		String str;
 		char[] ch = {'a'};
 		ch[0] = 'a';
+		MyUtil.dp("       ",0);
+		//sevens.turnPlayer.hand.showCards(0);
+		//MyUtil.dpln("pass", 0);
 		for (int count = 0 ; count < sevens.turnPlayer.hand.size() ; count++) {//キーを表示
 			MyUtil.always.p((ch[0]++) + "   ");
 		}
