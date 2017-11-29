@@ -7,12 +7,12 @@ import java.util.Random;
 public class AgentModupp extends AgentUpp {
 	
 	ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> allProbabilities;
-	int modSimNum=100;
+	int modSimNum = 100;
+	
 	AgentModupp() {
 		name = "upp   ";
-		allProbabilities =new ArrayList<>();
+		allProbabilities = new ArrayList<>();
 	}
-	
 	
 	
 	Card strategy(Sevens sevens, int printDepth) {
@@ -31,7 +31,7 @@ public class AgentModupp extends AgentUpp {
 		for (Player p : sevens.players) playersHandSize.add(p.hand.size());
 		//Player player;
 		Cards cards = new Cards();
-		//		Result result;
+		//Result result;
 		ArrayList<Integer> scores;
 		MontecarloSimulation simulation;
 		
@@ -97,11 +97,11 @@ public class AgentModupp extends AgentUpp {
 				Cards test = new Cards();
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
 					world.get(index).sortSuitRank();
-//					world.get(index).showCards(0);
-//					MyUtil.always.pln();
-//					if (sevens.playersOrder.get(sevens.fakeTurn) != index) {
+					//world.get(index).showCards(0);
+					//MyUtil.always.pln();
+					//if (sevens.playersOrder.get(sevens.fakeTurn) != index) {
 					test = test.getUnion(worldCopy.get(index));
-//					}
+					//}
 				}
 				test.sortSuitRank();
 				for (int index = 0 ; index < sevens.players.size() ; index++) {
@@ -187,7 +187,7 @@ public class AgentModupp extends AgentUpp {
 							//現実もシミュレーションも同じアクションの場合
 							int xxx = prevSimHistory.scores.get(index);
 							for (Card card : prevSimHistory.simHands.get(index)) {
-//						Cards hand = prevSimHistory.simHands.get(index);
+								//Cards hand = prevSimHistory.simHands.get(index);
 								probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
 								if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
 									int yyy = probability + 3 * (xxx * 2 - playerNum);
@@ -277,50 +277,50 @@ public class AgentModupp extends AgentUpp {
 		return playerRankSuitProbability;
 		
 	}
-//	ArrayList<ArrayList<ArrayList<Integer>>> estimateActionScore(){
-//		ArrayList<ArrayList<ArrayList<Integer>>> scores=new ArrayList<>();
-//		int player, rank, suit, index, playerNum = handsNum.size();
-//		ArrayList<ArrayList<Integer>> playerRankProbability;
-//		ArrayList<Integer> playerProbability;
-//		return null;
-//	}
-//		ArrayList<ArrayList<ArrayList<Integer>>> probabilityEstimation(ArrayList<History> prevSimHistories, ArrayList<Integer> handsNum, Cards secret) {//世界の確率推定
+	//ArrayList<ArrayList<ArrayList<Integer>>> estimateActionScore(){
+	//ArrayList<ArrayList<ArrayList<Integer>>> scores=new ArrayList<>();
+	//int player, rank, suit, index, playerNum = handsNum.size();
+	//ArrayList<ArrayList<Integer>> playerRankProbability;
+	//ArrayList<Integer> playerProbability;
+	//return null;
+	//}
+	//ArrayList<ArrayList<ArrayList<Integer>>> probabilityEstimation(ArrayList<History> prevSimHistories, ArrayList<Integer> handsNum, Cards secret) {//世界の確率推定
 //ArrayList<ArrayList<ArrayList<Integer>>> playerRankSuitProbability = new ArrayList<>();
-//	int player, rank, suit, index, playerNum = handsNum.size();
-//	ArrayList<ArrayList<Integer>> playerRankProbability;
-//	ArrayList<Integer> playerProbability;
-//	int probability;
-//		for (suit = 1; suit < 5 ; suit++) {
-//		playerRankSuitProbability.add(new ArrayList<ArrayList<Integer>>());
-//		for (rank = 1; rank < 14 ; rank++) {
-//			playerProbability = new ArrayList<Integer>();
-//			playerRankSuitProbability.get(suit - 1).add(playerProbability);
-//			for (player = 0; player < playerNum ; player++) {
-//				if (secret.containsCard(rank, suit) && (handsNum.get(player) != 0)) {
-//					//まだ出てないカード&&プレイヤーの手札が有る
-//					playerProbability.add(playerNum * Test.M);
-//				} else {
-//					playerProbability.add(0);
-//				}
-//			}
-//		}
-//	}
-//		if (prevSimHistories != null) {
-//		for (History prevSimHistory : prevSimHistories) {
-//			for (index = 0; index < playerNum ; index++) {
-//				int xxx = prevSimHistory.scores.get(index);
-//				for (Card card : prevSimHistory.simHands.get(index)) {
-//					Cards hand = prevSimHistory.simHands.get(index);
-//					probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
-//					if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
-//						int yyy = probability * 2 - playerNum+1 + xxx;
-//						playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);
-//					}
-//				}
-//			}
-//		}
-//	}
-//		return playerRankSuitProbability;
+	//int player, rank, suit, index, playerNum = handsNum.size();
+	//ArrayList<ArrayList<Integer>> playerRankProbability;
+	//ArrayList<Integer> playerProbability;
+	//int probability;
+	//for (suit = 1; suit < 5 ; suit++) {
+	//playerRankSuitProbability.add(new ArrayList<ArrayList<Integer>>());
+	//for (rank = 1; rank < 14 ; rank++) {
+	//playerProbability = new ArrayList<Integer>();
+	//playerRankSuitProbability.get(suit - 1).add(playerProbability);
+	//for (player = 0; player < playerNum ; player++) {
+	//if (secret.containsCard(rank, suit) && (handsNum.get(player) != 0)) {
+	////まだ出てないカード&&プレイヤーの手札が有る
+	//playerProbability.add(playerNum * Test.M);
+	//} else {
+	//playerProbability.add(0);
+	//}
+	//}
+	//}
+	//}
+	//if (prevSimHistories != null) {
+	//for (History prevSimHistory : prevSimHistories) {
+	//for (index = 0; index < playerNum ; index++) {
+	//int xxx = prevSimHistory.scores.get(index);
+	//for (Card card : prevSimHistory.simHands.get(index)) {
+	//Cards hand = prevSimHistory.simHands.get(index);
+	//probability = playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).get(index);
+	//if (secret.containsCard(card.rank, card.suit) && (handsNum.get(index) != 0)) {
+	//int yyy = probability * 2 - playerNum+1 + xxx;
+	//playerRankSuitProbability.get(card.suit - 1).get(card.rank - 1).set(index, yyy);
+	//}
+	//}
+	//}
+	//}
+	//}
+	//return playerRankSuitProbability;
 //}
 //
 	
@@ -338,19 +338,18 @@ public class AgentModupp extends AgentUpp {
 			for (rank = 1; rank < 14 ; rank++) {
 				playerProbabilityCopy = new ArrayList<Integer>();
 				playerRankSuitProbabilityCopy.get(suit - 1).add(playerProbabilityCopy);
-				tmp=0;
+				tmp = 0;
 				for (player = 0; player < playerNum ; player++) {
-					if(secret.containsCard(rank,suit)) {
-						for (int iii=0;iii<allProbabilities.size();iii++){
-							probabilities =allProbabilities.get(iii);
+					if (secret.containsCard(rank, suit)) {
+						for (int iii = 0 ; iii < allProbabilities.size() ; iii++) {
+							probabilities = allProbabilities.get(iii);
 							tmp += probabilities.get(suit - 1).get(rank - 1).get(player);
 						}
 						
 						playerProbabilityCopy.add(tmp);
 						total += tmp;
-					}
-					else playerProbabilityCopy.add(0);
-					//	System.out.println(suit + "  " + rank + "  " + tmp + "  " + total + "  ");
+					} else playerProbabilityCopy.add(0);
+					//System.out.println(suit + "  " + rank + "  " + tmp + "  " + total + "  ");
 				}
 			}
 		}
@@ -365,10 +364,10 @@ public class AgentModupp extends AgentUpp {
 		int sum;
 		int x = 0;
 		//System.out.println();
-//		Cards tmpCards=null;
+		//Cards tmpCards=null;
 		while (total > 0) {
-			//	System.out.println(total);
-//			tmpCards=new Cards();
+			//System.out.println(total);
+			//tmpCards=new Cards();
 			randNum = rand.nextInt(total);
 			sum = 0;
 		   LOOP:
@@ -387,13 +386,13 @@ public class AgentModupp extends AgentUpp {
 			}
 			x++;
 			playersCards.get(player).add(Card.createCard(rank, suit));
-			//	System.out.println(rank+", "+suit+".");
+			//System.out.println(rank+", "+suit+".");
 			for (index = 0; index < handsNum.size() ; index++) {
 				total -= playerRankSuitProbabilityCopy.get(suit - 1).get(rank - 1).get(index);
 				playerRankSuitProbabilityCopy.get(suit - 1).get(rank - 1).set(index, 0);
-//				tmpCards=tmpCards.getUnion(playersCards.get(index));
+				//tmpCards=tmpCards.getUnion(playersCards.get(index));
 			}
-//			tmpCards.showCardsWithSpace(0);
+			//tmpCards.showCardsWithSpace(0);
 			if (playersCards.get(player).size() >= handsNum.get(player)) {
 				for (suit = 1; suit < 5 ; suit++) {
 					for (rank = 1; rank < 14 ; rank++) {
@@ -403,7 +402,7 @@ public class AgentModupp extends AgentUpp {
 				}
 			}
 		}
-//		tmpCards=tmpCards;
+		//tmpCards=tmpCards;
 		return playersCards;
 	}
 }

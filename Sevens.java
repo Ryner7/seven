@@ -19,7 +19,7 @@ public class Sevens {
 	final static String PASS_STR = "pass";
 	final static String RETIRE_STR = "retire";
 	Player turnPlayer;
-	Cards deck, layout,allCards;
+	Cards deck, layout, allCards;
 	int fakeTurn;//0->1->2->3->0->…
 	ArrayList<Integer> playersOrder;
 	ArrayList<Player> players;
@@ -68,7 +68,7 @@ public class Sevens {
 		layout = new Cards();
 		fakeTurn = 0;
 		deck = Cards.createCards(Test.cardSize);
-		allCards=deck.deepCopy();
+		allCards = deck.deepCopy();
 		dealAll();
 		
 		MyUtil.play.pln("デッキ表示");
@@ -108,7 +108,7 @@ public class Sevens {
 		}
 	}
 	
-	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout,Cards argAllCards, int argFakeTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory, ArrayList<AgentSevens> agents) {
+	void setupSevens(ArrayList<Player> argPlayers, Cards argDeck, Cards argLayout, Cards argAllCards, int argFakeTurn, int argTotalTurn, int argPrintDepth, ArrayList<Integer> argPlayerOrder, History argHistory, ArrayList<AgentSevens> agents) {
 		players = new ArrayList<Player>();
 		retireNum = 0;
 		remainingNum = argPlayers.size() - 1;
@@ -129,7 +129,7 @@ public class Sevens {
 		}
 		deck = argDeck.deepCopy();
 		layout = argLayout.deepCopy();
-		allCards=argAllCards.deepCopy();
+		allCards = argAllCards.deepCopy();
 		initTurn = argFakeTurn;
 		totalTurn = argTotalTurn;
 		printDepth = argPrintDepth;
@@ -147,7 +147,7 @@ public class Sevens {
 		int alone, count, tmp;
 		ArrayList<Cards> hands;
 		Card playCard;
-		//	Player p;
+		//Player p;
 		fakeTurn = initTurn;
 	   PLAY:
 		while (true) {
@@ -156,12 +156,12 @@ public class Sevens {
 				turnPlayer = players.get(playersOrder.get(fakeTurn));
 				if (turnPlayer.nums.get(END_INDEX) != REMAINING_NUM) continue;
 				totalTurn++;
-				MyUtil.dp(".",printDepth);
-//				alone=2;
-//				for(Player p:players){
-//					if (p.nums.get(END_INDEX) == 1) ;//一人以外あがり
-//					else alone--;//まだ二人以上あがってない
-//				}
+				MyUtil.dp(".", printDepth);
+				//alone=2;
+				//for(Player p:players){
+				//if (p.nums.get(END_INDEX) == 1) ;//一人以外あがり
+				//else alone--;//まだ二人以上あがってない
+				//}
 				if (remainingNum - retireNum == 0) {//他の皆が上がっている．プレイヤーが残り一人
 					while (turnPlayer.hand.size() > 0) {//手札を場に並べるq
 						layout.add(turnPlayer.hand.remove(0));

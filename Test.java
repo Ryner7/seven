@@ -8,23 +8,34 @@ import java.util.Scanner;
 
 /**
  * Created by ryoto on 2017/10/17.
+ * <p>
+ * <p>
+ * 忙しい人のためのIntelliJ IDEAショートカット集（´-`）
+ * https://qiita.com/yoppe/items/f7cbeb825c071691d3f2
  */
 public class Test {
-	static final int M = 100;//シミュレーション回数
+	static final int M = 10;//シミュレーション回数
 	static final int gameNum = 100;//ゲーム回数
 	static final boolean connected1And13 = false;
 	static final int cardSize = 52;
 	static final int uppEstimationType = 0;
 	static final int weightType = 0;
-	static final int monteNum = 10,
-			uppNum = 10,
+	static final int monteNum = 1000,
+			uppNum = 1000,
 			modNum = 1000;
-	static final int uppVal = -1;
+	
+	
+	static  int uppVal = 1;
+	
+	
 	static int Ms;
 	static int playerNum = 4;
 	
 	//static final int C=10;
 	public static void main(String args[]) {
+		if(args.length<1){}
+		else{uppVal=Integer.parseInt(args[0]);}
+		
 		Calendar cal = Calendar.getInstance();
 		Scanner scan = new Scanner(System.in);
 		String str = scan.next();
@@ -50,7 +61,7 @@ public class Test {
 			}
 			for (int count = 1 ; count < 4 ; count++) {
 				
-				int[] Agents = {0, 0, count, 4 - count, 0,0};
+				int[] Agents = {0, 0, count, 4 - count, 0, 0};
 				//int[] Agents = {4, 0, 0, 0, 0,0};
 				//int[] Agents = {0, 0, 3, 0, 0,1};
 				
@@ -58,7 +69,7 @@ public class Test {
 				for (int index = 0 ; index < agentsResult.size() ; index++) {
 					Double agentResult = agentsResult.get(index);
 					results.set(index, agentResult + results.get(index));
-					//	System.out.println(results.get(index));
+					//System.out.println(results.get(index));
 				}
 			}
 			MyUtil.always.pln();
@@ -147,6 +158,7 @@ public class Test {
 		int P = 4;
 		double score;
 		Player player;
+		Result.EstimationAccuracy.init();
 		for (count = 0; count < P ; count++) {
 			players.add(new Player(count));
 		}
@@ -221,7 +233,7 @@ public class Test {
 			score = ((double) 2 * scores.get(count)) / (N * (players.size() - 1));
 			MyUtil.always.pf("%.5f\n", score);
 			fw.write(String.format("%.5f\n", score));
-			int agent=agentList.get(count);
+			int agent = agentList.get(count);
 			agentsResult.set(agent, score + agentsResult.get(agent));
 		}
 		fw.write("\n");
@@ -230,18 +242,19 @@ public class Test {
 			
 			} else {
 				agentsResult.set(count, agentsResult.get(count) / argAgentList[count]);
-				//	System.out.println(agentsResult.get(count)+" //");
+				//System.out.println(agentsResult.get(count)+" //");
 			}
 		}
+		Result.EstimationAccuracy.outputData();
 		return agentsResult;
-//		for (int alpha = 0; alpha < players.size(); alpha++) {
-//			player = players.get(alpha);
-//			MyUtil.always.p(player.name + " ");
-//			for (Integer time : player.rankTimes(sevens.ps.size())) {
-//				System.out.printf("%3f ", ((double) time) / (N));
-//			}
-//			myUtil.pln(" " + playersCopy.get(alpha).agent.getName());
-//		}
+		//for (int alpha = 0; alpha < players.size(); alpha++) {
+		//player = players.get(alpha);
+		//MyUtil.always.p(player.name + " ");
+		//for (Integer time : player.rankTimes(sevens.ps.size())) {
+		//System.out.printf("%3f ", ((double) time) / (N));
+		//}
+		//myUtil.pln(" " + playersCopy.get(alpha).agent.getName());
+		//}
 	}
 	
 	static double weight(int turn, int max) {
